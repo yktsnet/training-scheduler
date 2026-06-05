@@ -1,0 +1,52 @@
+[
+  {
+    "id": 1,
+    "name": "Gitで始めるバージョン管理",
+    "days": 3,
+    "doc_link": "https://git-scm.com/book/ja/v2",
+    "summary": "ソフトウェア開発の基盤となるバージョン管理を習得します。ブランチ戦略やPullRequestを使った開発フローを実践的に体験します。",
+    "skills": "Git基本操作、ブランチ管理、コンフリクト解消、GitHub Flow",
+    "prerequisites": "コマンドライン操作の基本",
+    "difficulty": 1
+  },
+  {
+    "id": 2,
+    "name": "Linux・シェルスクリプト入門",
+    "days": 5,
+    "doc_link": "https://linuxjourney.com",
+    "summary": "開発環境の基盤となるLinuxの操作を習得します。ファイル操作からプロセス管理、シェルスクリプトによる自動化までを体験します。",
+    "skills": "Linuxコマンド操作、ファイルシステム、パーミッション管理、シェルスクリプト",
+    "prerequisites": "特になし",
+    "difficulty": 2
+  },
+  {
+    "id": 3,
+    "name": "データベース設計と SQL",
+    "days": 7,
+    "doc_link": "https://www.postgresql.org/docs/current/tutorial.html",
+    "summary": "実務で使えるデータベース設計スキルを習得します。正規化・ER図設計から始め、複雑なクエリ・トランザクション・インデックス最適化まで扱います。",
+    "skills": "ER図設計、正規化、SQL（DDL/DML）、トランザクション、インデックス",
+    "prerequisites": "基本的なプログラミング経験",
+    "difficulty": 3
+  },
+  {
+    "id": 4,
+    "name": "REST API 設計と実装",
+    "days": 10,
+    "doc_link": "https://developer.mozilla.org/ja/docs/Learn_web_development/Extensions/Server-side/First_steps/Introduction",
+    "summary": "Web システムのバックボーンとなる REST API を設計・実装します。認証・バリデーション・エラーハンドリングを含む実務レベルの API 開発を体験します。",
+    "skills": "RESTful設計原則、HTTPメソッド、JSONレスポンス設計、認証（JWT）、テスト",
+    "prerequisites": "いずれかの言語でのプログラミング経験、SQLの基本",
+    "difficulty": 3
+  },
+  {
+    "id": 5,
+    "name": "フルスタック Web アプリ開発",
+    "days": 20,
+    "doc_link": "https://ja.vuejs.org/guide/introduction",
+    "summary": "フロントエンドからバックエンド・インフラまでを一人で構築します。要件定義・設計・実装・デプロイを通じて、現代的な Web 開発の全体像を掴みます。",
+    "skills": "Vue3、REST API、データベース設計、Docker、CI/CD",
+    "prerequisites": "HTML/CSS/JavaScript の基礎、REST API の基本概念",
+    "difficulty": 4
+  }
+]

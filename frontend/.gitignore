@@ -1,0 +1,30 @@
+# OS files
+.DS_Store
+Thumbs.db
+# --- Added for Python ---
+venv/
+.venv/
+__pycache__/
+*.py[cod]
+*$py.class
+# ------------------------
+# WordPress
+wp-content/uploads/
+wp-content/upgrade/
+wp-content/languages/
+wp-content/plugins/
+wp-content/themes/*
+!wp-content/themes/my-modern-lab/
+# Node / Vite
+node_modules/
+dist/
+.env
+# Docker
+.db_data/
+# Go binary
+backend/training-app
+# Build artifacts (frontend embed用の中間ファイル)
+backend/dist/
+# Database (実データは除外)
+instance/database.db
+backend/instance/database.db

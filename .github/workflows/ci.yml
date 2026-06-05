@@ -1,0 +1,61 @@
+name: CI
+
+on:
+  push:
+    branches: [main, go-dev]
+  pull_request:
+    branches: [main, go-dev]
+
+jobs:
+  test:
+    name: Go Tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: backend/go.mod
+          cache-dependency-path: backend/go.sum
+
+      - name: Run tests
+        working-directory: backend
+        run: go test ./internal/... -v -count=1
+
+  build:
+    name: Build Binary
+    needs: test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Build frontend
+        working-directory: frontend
+        run: |
+          npm ci
+          npm run build
+
+      - name: Copy dist to backend
+        run: cp -r frontend/dist backend/dist
+
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: backend/go.mod
+          cache-dependency-path: backend/go.sum
+
+      - name: Build Go binary
+        working-directory: backend
+        # glebarez/sqlite は Pure Go のため CGO_ENABLED=0 で問題なし
+        run: CGO_ENABLED=0 go build -ldflags="-s -w" -o training-app .
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: training-app-${{ github.sha }}
+          path: backend/training-app
+          retention-days: 7

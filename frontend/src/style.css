@@ -1,0 +1,52 @@
+/* --- ~/ops/training-scheduler/frontend/src/style.css --- */
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&display=swap');
+:root {
+  --primary: #4f46e5;
+  --success: #10b981;
+  --text-main: #0f172a;
+  --text-muted: #64748b;
+  --bg-header: #f8fafc;
+  --border-color: #cbd5e1;
+  --border-light: #e2e8f0;
+}
+
+body {
+  font-family: 'Noto Sans JP', sans-serif;
+}
+
+/* 共通カード構造 */
+.custom-card {
+  background: #fff; border: 2px solid var(--border-color); border-radius: 16px;
+  overflow: hidden; transition: all 0.3s ease;
+}
+.custom-card.card-active {
+  border-color: var(--primary);
+  box-shadow: 0 10px 25px -5px rgba(79, 70, 229, 0.1);
+}
+
+/* カードヘッダー */
+.card-header {
+  background: var(--bg-header); padding: 1.25rem 1.75rem; border-bottom: 2px solid var(--border-light);
+  display: flex; justify-content: space-between; align-items: center;
+}
+
+/* 共通セグメントコントロール（View/Edit切り替え） */
+.segmented-control { display: flex; background: #f1f5f9; padding: 4px; border-radius: 10px; border: 1px solid var(--border-light); }
+.control-btn {
+  padding: 6px 16px; border-radius: 7px; font-size: 0.75rem; font-weight: 700;
+  color: var(--text-muted); background: transparent; border: none; cursor: pointer;
+}
+.control-btn.is-selected { background: #fff; color: var(--text-main); box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+
+/* エディタエリア */
+.editor-area textarea, .rendered-view {
+  width: 100%; min-height: 250px; padding: 2rem; border: none; outline: none;
+  font-family: 'Inter', sans-serif; font-size: 1rem; line-height: 1.8;
+}
+.editor-area textarea { 
+  background-image: linear-gradient(#f1f5f9 1px, transparent 1px); 
+  background-size: 100% 1.8em; font-family: 'JetBrains Mono', monospace; 
+}
+
+/* フッター */
+.card-footer { padding: 1rem 1.75rem; border-top: 1px solid #f1f5f9; background: #fff; }
