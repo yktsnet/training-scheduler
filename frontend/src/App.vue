@@ -106,7 +106,6 @@ const checkRoadmapStatus = async () => {
 
 const handleTabClick = (path, event) => {
   if (!hasRoadmap.value) {
-    alert("まずは「1. Select Menu」から研修項目を選択し、「Generate Roadmap」ボタンを押してロードマップを生成してください。");
     return;
   }
   router.push(path);

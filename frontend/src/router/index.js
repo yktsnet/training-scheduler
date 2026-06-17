@@ -34,7 +34,6 @@ router.beforeEach(async (to, from, next) => {
       const hasRoadmap = res.data && res.data.length > 0
       
       if (!hasRoadmap) {
-        alert("カリキュラムが選択されていません。まずは「1. Select Menu」でカリキュラムを選択し、Roadmapを生成してください。")
         return next('/')
       }
     } catch (e) {
