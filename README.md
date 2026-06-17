@@ -6,7 +6,7 @@
 
 ---
 
-## 💡 コンセプト
+## 💡 Concept
 
 - **主体的プランニング**: システムは枠組みだけを提示し、具体的な計画は新人が自身の言葉で記述します。
 - **内省の可視化**: 機械的な進捗率（％）の計算ではなく、本人の「主観的なズレ（手応え）」をマネージャと共有します。
@@ -15,7 +15,7 @@
 
 ---
 
-## 🔒 セキュリティについて
+## 🔒 Security
 
 本アプリはチーム内の**信頼関係を前提とした小規模利用**を想定して設計されています。
 
@@ -25,16 +25,16 @@
 
 ---
 
-## 🗄 データ構造 (Models)
+## 🗄 Data Structure (Models)
 
-### 0. User (アニマルユーザー)
+### 0. User (Animal Login)
 
 <img src="src/animals.png" width="500" alt="menu-pic">
 
 - **役割**: アプリを利用する個人（新人・メンター）の識別。
 - **項目**: `emoji` (🦁や🐰などのユニークな絵文字)。
 
-### 1. Menu (研修メニュー)
+### 1. Menu (Curriculum)
 
 <img src="src/menu.png" width="500" alt="menu-pic">
 
@@ -42,21 +42,21 @@
 - **項目**: 名称、目安日数、概要、参考URL。
 - ※ `internal/database/menu_config.json` をマスターとして起動時に自動同期します。
 
-### 2. Plan (研修計画)
+### 2. Plan (Training Plan)
 
 <img src="src/plan.png" width="500" alt="plan-pic">
 
 - **役割**: 各メニューに対する具体的な学習計画。
 - **項目**: `content` (自由記述のテキスト)、`user_id`。
 
-### 3. Report (日報)
+### 3. Report (Daily Log)
 
 <img src="src/daily.png" width="500" alt="daily-pic">
 
 - **役割**: 日付単位の事実と内省の記録。
 - **項目**: `date` (YYYY-MM-DD)、`content` (日報内容)、`user_id`。
 
-### 4. Progress (進捗状況)
+### 4. Progress (Status & Condition)
 
 <img src="src/overview.png" width="500" alt="overview-pic">
 
@@ -65,7 +65,7 @@
 
 ---
 
-## 🛠 技術スタック
+## 🛠 Tech Stack
 
 **Frontend**
 - Vue 3 (Composition API)
@@ -80,14 +80,14 @@
 
 ---
 
-## 📦 セットアップ
+## 📦 Setup & Installation
 
-### 前提条件
+### Prerequisites
 
 - Go 1.25+
 - Node.js 20+
 
-### 単一バイナリのビルドと起動
+### Build & Run Single Binary
 
 フロントエンドのビルド → Go バイナリへの embed → 起動を一連で行います。
 
@@ -101,7 +101,7 @@ make build
 
 ブラウザで http://localhost:5000 にアクセス。
 
-### 開発モード（フロント・バック分離）
+### Development Mode
 
 ```bash
 # 初回のみ: go:embed 用のスタブ作成
@@ -114,7 +114,7 @@ make dev-back
 make dev-front
 ```
 
-### テスト実行
+### Running Tests
 
 ```bash
 make test
@@ -126,18 +126,18 @@ make test
 
 ## 🚀 CI/CD
 
-### CI（自動テスト・ビルド確認）
+### CI (Continuous Integration)
 
 `main` / `go-dev` への push および pull request 時に GitHub Actions で自動実行されます。
 
 1. Go テスト (`go test ./internal/...`)
 2. フロントエンドビルド + Go バイナリビルドの疎通確認
 
-### CD（自動デプロイ）
+### CD (Continuous Deployment)
 
 `main` ブランチへのプッシュ時に、Tailscale VPN 経由で対象サーバーへ自動デプロイします。
 
-#### 初回セットアップ
+#### Initial Setup
 
 **1. GitHub Secrets の登録**
 
