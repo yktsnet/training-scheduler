@@ -1,8 +1,8 @@
-# 研修スケジュール管理 Webアプリ (Training Scheduler)
+# Training Scheduler
 
 [![CI](https://github.com/yktsnet/training-scheduler/actions/workflows/ci.yml/badge.svg)](https://github.com/yktsnet/training-scheduler/actions/workflows/ci.yml)
 
-新入社員の**自律性を促す**ことを目的とした研修支援ツールです。「システムによる自動管理」と「手書き感覚のアナログ操作」を融合させ、ガチガチの進捗管理ではなく、新人の「主観的な手応え」をベースにメンターが静かに見守るためのアプリケーションです。
+A training scheduler web application designed to promote self-reliance in new employees. Combining system-guided structures with free-form customization, it shifts the focus from rigid milestone tracking to reflective progress sharing under the gentle supervision of mentors.
 
 ---
 
@@ -135,7 +135,7 @@ make test
 
 ### CD（自動デプロイ）
 
-`main` への push 時に VPS へ自動デプロイします。
+`main` ブランチへのプッシュ時に、Tailscale VPN 経由で対象サーバーへ自動デプロイします。
 
 #### 初回セットアップ
 
@@ -145,32 +145,33 @@ make test
 
 | Secret 名 | 内容 |
 |---|---|
-| `VPS_HOST` | VPS のホスト名または IP |
-| `VPS_USER` | SSH ログインユーザー名 |
+| `DEPLOY_HOST` | デプロイ先サーバーのホスト名または IP |
+| `DEPLOY_USER` | デプロイ用 SSH ログインユーザー名 |
 | `SSH_PRIVATE_KEY` | SSH 秘密鍵（`~/.ssh/id_ed25519` 等の中身） |
+| `TS_OAUTH_CLIENT_ID` | Tailscale OAuth Client ID |
+| `TS_OAUTH_SECRET` | Tailscale OAuth Client Secret |
 
-**2. VPS 側の sudoers 設定**
+**2. デプロイ先サーバー側の sudoers 設定**
 
-デプロイユーザーが `systemctl` をパスワードなしで実行できるよう設定：
+デプロイユーザーがサービス再起動やバイナリの配置をパスワードなしで実行できるよう設定します。
 
 ```bash
-sudo visudo -f /etc/sudoers.d/training-app
+sudo visudo -f /etc/sudoers.d/training-scheduler
 ```
 
-以下を追記：
+以下を追記します（ユーザー名や配置パスは環境に合わせて調整してください）：
 
 ```
 YOUR_USER ALL=(ALL) NOPASSWD: \
-  /bin/systemctl stop training-app, \
-  /bin/systemctl start training-app, \
-  /bin/mv /tmp/training-app /opt/training-scheduler/training-app, \
-  /bin/chmod +x /opt/training-scheduler/training-app
+  /usr/bin/systemctl restart training-scheduler, \
+  /usr/bin/mv /tmp/training-app /opt/training-scheduler/training-app, \
+  /usr/bin/chmod +x /opt/training-scheduler/training-app
 ```
 
 **3. systemd サービスファイルの配置（未設置の場合）**
 
 ```ini
-# /etc/systemd/system/training-app.service
+# /etc/systemd/system/training-scheduler.service
 [Unit]
 Description=Training Scheduler App
 After=network.target
@@ -189,7 +190,7 @@ WantedBy=multi-user.target
 
 ```bash
 sudo systemctl daemon-reload
-sudo systemctl enable training-app
+sudo systemctl enable training-scheduler
 ```
 
 

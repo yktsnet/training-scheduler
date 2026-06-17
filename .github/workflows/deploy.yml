@@ -2,9 +2,16 @@ name: Deploy
 on:
   push:
     branches: [main]
+
+env:
+  APP_NAME: training-app
+  DEPLOY_DIR: /opt/training-scheduler
+  SERVICE_NAME: training-scheduler
+  TEMP_DIR: /tmp
+
 jobs:
   deploy:
-    name: Deploy to sv6
+    name: Deploy Application
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -31,30 +38,33 @@ jobs:
 
       - name: Build Go binary (Linux amd64)
         working-directory: backend
-        run: CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -ldflags="-s -w" -o training-app .
+        run: CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -ldflags="-s -w" -o ${{ env.APP_NAME }} .
+
       - name: Connect to Tailscale
         uses: tailscale/github-action@v3
         with:
           oauth-client-id: ${{ secrets.TS_OAUTH_CLIENT_ID }}
           oauth-secret: ${{ secrets.TS_OAUTH_SECRET }}
           tags: tag:ci
-      - name: Copy binary to sv6
+
+      - name: Copy binary to target host
         uses: appleboy/scp-action@v0.1.7
         with:
-          host: ${{ secrets.SV6_HOST }}
-          username: sv6
+          host: ${{ secrets.DEPLOY_HOST }}
+          username: ${{ secrets.DEPLOY_USER }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
-          source: "backend/training-app"
-          target: "/tmp/"
+          source: "backend/${{ env.APP_NAME }}"
+          target: "${{ env.TEMP_DIR }}/"
           strip_components: 1
 
       - name: Restart service
         uses: appleboy/ssh-action@v1
         with:
-          host: ${{ secrets.SV6_HOST }}
-          username: sv6
+          host: ${{ secrets.DEPLOY_HOST }}
+          username: ${{ secrets.DEPLOY_USER }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
-            sudo mv /tmp/training-app /opt/training-scheduler/training-app
-            sudo chmod +x /opt/training-scheduler/training-app
-            sudo systemctl restart training-scheduler
+            sudo mv ${{ env.TEMP_DIR }}/${{ env.APP_NAME }} ${{ env.DEPLOY_DIR }}/${{ env.APP_NAME }}
+            sudo chmod +x ${{ env.DEPLOY_DIR }}/${{ env.APP_NAME }}
+            sudo systemctl restart ${{ env.SERVICE_NAME }}
+
