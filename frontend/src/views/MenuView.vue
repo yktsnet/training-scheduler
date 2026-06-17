@@ -3,6 +3,13 @@
     <div class="view-header">
       <h2 class="title-en">Curriculum Selection 🔍</h2>
       <p class="subtitle">研修項目を選択してください。番号順に進めていくのがスムーズです。</p>
+      
+      <!-- 追加：チェックが0件のときに表示するアラートメッセージ -->
+      <transition name="fade">
+        <div v-if="selectedIds.length === 0" class="selection-guide-alert">
+          💡 まずは研修項目を1つ以上チェックして、下部の「Generate Roadmap」ボタンを押してください。
+        </div>
+      </transition>
     </div>
 
     <div class="menu-list">
@@ -175,4 +182,25 @@ onMounted(fetchMenus);
   box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3); border: none; cursor: pointer;
 }
 .btn-generate:disabled { background: #cbd5e1; color: #94a3b8 !important; cursor: not-allowed; box-shadow: none; }
+
+/* 追加：未選択時のガイドアラートのスタイル */
+.selection-guide-alert {
+  margin-top: 1rem;
+  padding: 12px 20px;
+  background-color: #fff7ed; /* 温かみのある薄いオレンジ */
+  border: 1px solid #ffedd5;
+  border-radius: 10px;
+  color: #ea580c;            /* 視認性の良い濃いオレンジ */
+  font-size: 0.9rem;
+  font-weight: 700;
+  display: inline-block;
+  box-shadow: 0 2px 4px rgba(234, 88, 12, 0.05);
+}
+
+.fade-enter-active, .fade-leave-active {
+  transition: opacity 0.2s ease;
+}
+.fade-enter-from, .fade-leave-to {
+  opacity: 0;
+}
 </style>
