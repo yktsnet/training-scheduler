@@ -2,7 +2,7 @@
 
 [![CI](https://github.com/yktsnet/training-scheduler/actions/workflows/ci.yml/badge.svg)](https://github.com/yktsnet/training-scheduler/actions/workflows/ci.yml)
 
-A training scheduler web application designed to promote self-reliance in new employees. Combining system-guided structures with free-form customization, it shifts the focus from rigid milestone tracking to reflective progress sharing under the gentle supervision of mentors.
+新入社員の自律性を促すことを目的とした研修支援ツールです。「システムによる自動管理」と「手書き感覚のアナログ操作」を融合させ、ガチガチの進捗管理ではなく、新人の「主観的な手応え」をベースにメンターが静かに見守るためのアプリケーションです。
 
 ---
 
