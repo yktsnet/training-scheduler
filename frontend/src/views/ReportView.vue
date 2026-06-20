@@ -1,7 +1,9 @@
 <template>
   <div class="plan-view">
     <div class="view-header">
-      <h2 class="title-en">Daily Training Log 📔</h2>
+      <h2 class="title-en">
+        Daily Training Log <BookOpen class="title-icon" :size="22" />
+      </h2>
       <p class="subtitle">開始日からの歩みを記録します。カードをクリックして編集、外をクリックして保存。</p>
     </div>
 
@@ -29,12 +31,16 @@
                 @click.stop="day.isEditing = false" 
                 :class="{ 'is-selected': !day.isEditing }"
                 class="control-btn"
-              >👁️ View</button>
+              >
+                <Eye class="btn-icon" :size="14" /> View
+              </button>
               <button 
                 @click.stop="day.isEditing = true" 
                 :class="{ 'is-selected': day.isEditing }"
                 class="control-btn"
-              >✏️ Edit</button>
+              >
+                <Edit class="btn-icon" :size="14" /> Edit
+              </button>
             </div>
           </div>
         </div>
@@ -71,7 +77,7 @@
     </div>
 
     <button v-if="reports.length > 3" class="jump-today-btn" @click="scrollToToday">
-      Jump to Today 👇
+      Jump to Today <ArrowDown class="btn-icon" :size="14" />
     </button>
   </div>
 </template>
@@ -79,6 +85,7 @@
 <script setup>
 import { ref, onMounted, computed } from 'vue';
 import axios from 'axios';
+import { BookOpen, Eye, Edit, ArrowDown } from 'lucide-vue-next';
 
 const reports = ref([]);
 const todayStr = new Date().toISOString().split('T')[0];
@@ -152,6 +159,17 @@ onMounted(fetchReports);
 .view-header { margin-bottom: 2.5rem; }
 .title-en { font-size: 1.75rem; font-weight: 900; color: #0f172a; margin-bottom: 0.5rem; }
 .subtitle { color: #64748b; font-size: 0.95rem; }
+
+.title-icon {
+  vertical-align: -3px;
+  margin-left: 6px;
+  color: var(--primary);
+}
+
+.btn-icon {
+  vertical-align: -2px;
+  margin-right: 4px;
+}
 
 .list-container { display: flex; flex-direction: column; gap: 3rem; }
 

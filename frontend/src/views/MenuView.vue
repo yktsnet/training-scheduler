@@ -1,7 +1,9 @@
 <template>
   <div class="menu-view">
     <div class="view-header">
-      <h2 class="title-en">Curriculum Selection 🔍</h2>
+      <h2 class="title-en">
+        Curriculum Selection <Search class="title-icon" :size="22" />
+      </h2>
       <p class="subtitle">研修項目を選択してください。番号順に進めていくのがスムーズです。</p>
       
       <!-- 追加：チェックが0件のときに表示するアラートメッセージ -->
@@ -41,23 +43,23 @@
 
         <div class="card-content">
           <div class="info-block-main">
-            <h4 class="block-label">📝 SUMMARY</h4>
+            <h4 class="block-label"><FileText class="label-icon" :size="12" /> SUMMARY</h4>
             <p class="block-text">{{ menu.summary }}</p>
             
             <div class="link-action">
               <a :href="menu.doc_link" target="_blank" class="reference-card-btn">
-                <span class="icon">📖</span> View Reference Docs
+                <BookOpen class="btn-icon" :size="14" /> View Reference Docs
               </a>
             </div>
           </div>
           
           <div class="info-block-sub">
             <div class="sub-item">
-              <h4 class="block-label">🛠️ SKILLS</h4>
+              <h4 class="block-label"><Wrench class="label-icon" :size="12" /> SKILLS</h4>
               <p class="block-text">{{ menu.skills }}</p>
             </div>
             <div class="sub-item">
-              <h4 class="block-label">🎓 PREREQUISITE</h4>
+              <h4 class="block-label"><GraduationCap class="label-icon" :size="12" /> PREREQUISITE</h4>
               <p class="block-text">{{ menu.prerequisites }}</p>
             </div>
           </div>
@@ -71,7 +73,7 @@
         @click="generatePlans" 
         :disabled="selectedIds.length === 0"
       >
-        Generate Roadmap ✨
+        Generate Roadmap <Sparkles class="btn-icon" :size="16" />
       </button>
     </div>
   </div>
@@ -81,6 +83,7 @@
 import { ref, onMounted } from 'vue';
 import axios from 'axios';
 import { useRouter } from 'vue-router';
+import { Search, BookOpen, Wrench, GraduationCap, Sparkles, FileText } from 'lucide-vue-next';
 
 const menus = ref([]);
 const selectedIds = ref([]);
@@ -119,6 +122,23 @@ onMounted(fetchMenus);
 .view-header { margin-bottom: 2.5rem; }
 .title-en { font-size: 1.75rem; font-weight: 900; color: #0f172a; margin-bottom: 0.5rem; }
 .subtitle { color: #64748b; font-size: 0.95rem; }
+
+.title-icon {
+  vertical-align: -3px;
+  margin-left: 6px;
+  color: var(--primary);
+}
+
+.label-icon {
+  vertical-align: -2px;
+  margin-right: 6px;
+  color: #64748b;
+}
+
+.btn-icon {
+  vertical-align: -2px;
+  margin-right: 6px;
+}
 
 .menu-list { display: flex; flex-direction: column; gap: 1.5rem; }
 

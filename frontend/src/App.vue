@@ -28,14 +28,17 @@
 
     <template v-if="activeAnimal && !showAnimalModal">
       <header class="main-header">
-        <h1 class="brand">Training Scheduler 📅</h1>
+        <h1 class="brand">
+          <Calendar class="brand-icon" :size="24" /> Training Scheduler
+        </h1>
         <div class="current-animal" @click="showAnimalModal = true" role="button" aria-label="Change character">
-          Playing as: {{ activeAnimal.emoji }} 🐾
+          Playing as: {{ activeAnimal.emoji }}
+          <Settings class="settings-icon" :size="14" />
         </div>
         
         <nav class="tab-nav">
           <router-link to="/" class="nav-item">
-            <span class="icon">🔍</span> 1. Select Menu
+            <Search class="nav-icon" :size="16" /> 1. Select Menu
           </router-link>
           <router-link 
             to="/plan" 
@@ -43,7 +46,7 @@
             :class="{ 'nav-disabled': !hasRoadmap }"
             @click.prevent="handleTabClick('/plan', $event)"
           >
-            <span class="icon">✍️</span> 2. Edit Plan
+            <Edit class="nav-icon" :size="16" /> 2. Edit Plan
           </router-link>
           <router-link 
             to="/report" 
@@ -51,7 +54,7 @@
             :class="{ 'nav-disabled': !hasRoadmap }"
             @click.prevent="handleTabClick('/report', $event)"
           >
-            <span class="icon">📔</span> 3. Daily Log
+            <BookOpen class="nav-icon" :size="16" /> 3. Daily Log
           </router-link>
           <router-link 
             to="/overview" 
@@ -59,7 +62,7 @@
             :class="{ 'nav-disabled': !hasRoadmap }"
             @click.prevent="handleTabClick('/overview', $event)"
           >
-            <span class="icon">🚀</span> 4. Overview
+            <Rocket class="nav-icon" :size="16" /> 4. Overview
           </router-link>
         </nav>
       </header>
@@ -75,6 +78,7 @@
 import { ref, onMounted, computed, watch } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
 import axios from 'axios';
+import { Calendar, Settings, Search, Edit, BookOpen, Rocket } from 'lucide-vue-next';
 
 const showAnimalModal = ref(true);
 const activeAnimal = ref(null);
@@ -174,7 +178,32 @@ watch(() => route.path, checkRoadmapStatus);
 
 .main-header {
   margin-bottom: 3rem;
-  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+}
+
+.brand-icon {
+  vertical-align: -3px;
+  margin-right: 8px;
+  color: var(--primary);
+}
+
+.settings-icon {
+  margin-left: 6px;
+  color: #64748b;
+  transition: transform 0.3s ease;
+}
+
+.current-animal:hover .settings-icon {
+  transform: rotate(45deg);
+  color: #0f172a;
+}
+
+.nav-icon {
+  vertical-align: -3px;
+  margin-right: 6px;
 }
 
 .brand {
