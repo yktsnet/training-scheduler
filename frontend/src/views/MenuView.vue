@@ -22,23 +22,25 @@
         :class="{ 'is-selected': selectedIds.includes(menu.id) }"
       >
         <div class="card-header">
-          <div class="header-left">
-            <div class="index-number">{{ index + 1 }}</div>
-            
-            <div class="checkbox-container">
-              <input type="checkbox" :id="'m-'+menu.id" :value="menu.id" v-model="selectedIds">
-              <label :for="'m-'+menu.id" class="custom-check"></label>
+          <div class="header-top">
+            <div class="header-left">
+              <div class="index-number">{{ index + 1 }}</div>
+              
+              <div class="checkbox-container">
+                <input type="checkbox" :id="'m-'+menu.id" :value="menu.id" v-model="selectedIds">
+                <label :for="'m-'+menu.id" class="custom-check"></label>
+              </div>
+            </div>
+
+            <div class="header-meta">
+              <span class="days-badge">{{ menu.days }} Days</span>
+              <div class="difficulty-stars">
+                {{ "★".repeat(menu.difficulty) }}<span class="empty-stars">{{ "☆".repeat(5-menu.difficulty) }}</span>
+              </div>
             </div>
           </div>
 
-          <div class="title-section">
-            <h3 class="menu-name">{{ menu.name }}</h3>
-            <span class="days-badge">{{ menu.days }} Days</span>
-          </div>
-          
-          <div class="difficulty-stars">
-            {{ "★".repeat(menu.difficulty) }}<span class="empty-stars">{{ "☆".repeat(5-menu.difficulty) }}</span>
-          </div>
+          <h3 class="menu-name">{{ menu.name }}</h3>
         </div>
 
         <div class="card-content">
@@ -152,11 +154,25 @@ onMounted(fetchMenus);
 .menu-card.is-selected { border-color: #4f46e5; background-color: #f8faff; box-shadow: 0 0 0 1px #4f46e5; }
 
 .card-header {
-  display: flex; align-items: center; gap: 1.25rem;
-  margin-bottom: 1.5rem; padding-bottom: 1rem; border-bottom: 2px solid #f1f5f9;
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 1.25rem;
+  margin-bottom: 1.5rem;
+  padding-bottom: 1rem;
+  border-bottom: 2px solid #f1f5f9;
 }
 
-.header-left { display: flex; align-items: center; gap: 15px; }
+.header-top {
+  display: contents;
+}
+
+.header-left {
+  grid-column: 1;
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
 
 /* インデックス番号のスタイル */
 .index-number {
@@ -166,9 +182,29 @@ onMounted(fetchMenus);
 }
 .is-selected .index-number { color: #4f46e5; }
 
-.title-section { flex: 1; display: flex; align-items: center; gap: 0.8rem; }
-.menu-name { font-size: 1.3rem; font-weight: 800; margin: 0; color: #0f172a; }
-.days-badge { background: #e2e8f0; color: #4f46e5; font-size: 0.75rem; font-weight: 800; padding: 4px 12px; border-radius: 6px; }
+.menu-name {
+  grid-column: 2;
+  font-size: 1.3rem;
+  font-weight: 800;
+  margin: 0;
+  color: #0f172a;
+}
+
+.header-meta {
+  grid-column: 3;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.days-badge {
+  background: #e2e8f0;
+  color: #4f46e5;
+  font-size: 0.75rem;
+  font-weight: 800;
+  padding: 4px 12px;
+  border-radius: 6px;
+}
 
 .card-content { display: grid; grid-template-columns: 1.4fr 1fr; gap: 2.5rem; }
 .block-label { font-size: 0.7rem; font-weight: 800; color: #475569; margin-bottom: 0.75rem; }
@@ -236,40 +272,47 @@ onMounted(fetchMenus);
     border-radius: 12px;
   }
   
-  /* カードヘッダーのグリッド化 */
+  /* カードヘッダーのスマホレイアウト */
   .card-header {
-    display: grid;
-    grid-template-columns: auto 1fr;
-    gap: 0.5rem 0.75rem;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.75rem;
     margin-bottom: 1rem;
     padding-bottom: 0.75rem;
   }
-  .header-left {
-    grid-column: 1;
-    grid-row: 1 / 3;
-    align-self: center;
-  }
-  .title-section {
-    grid-column: 2;
-    grid-row: 1;
+  .header-top {
     display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 4px;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+  }
+  .header-left {
+    grid-column: auto;
+    display: flex;
+    align-items: center;
+    gap: 12px;
   }
   .menu-name {
-    font-size: 1.1rem;
-    line-height: 1.35;
+    grid-column: auto;
+    font-size: 1.15rem;
+    line-height: 1.4;
+  }
+  .header-meta {
+    grid-column: auto;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
   }
   .days-badge {
-    align-self: flex-start;
+    align-self: auto;
     padding: 2px 8px;
     font-size: 0.7rem;
   }
   .difficulty-stars {
-    grid-column: 2;
-    grid-row: 2;
-    margin-top: -2px;
+    grid-column: auto;
+    grid-row: auto;
+    margin-top: 0;
     font-size: 0.85rem;
   }
   
