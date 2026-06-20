@@ -35,13 +35,28 @@
           <router-link to="/" class="nav-item">
             <span class="icon">🔍</span> 1. Select Menu
           </router-link>
-          <router-link to="/plan" class="nav-item">
+          <router-link 
+            to="/plan" 
+            class="nav-item" 
+            :class="{ 'nav-disabled': !hasRoadmap }"
+            @click.prevent="handleTabClick('/plan', $event)"
+          >
             <span class="icon">✍️</span> 2. Edit Plan
           </router-link>
-          <router-link to="/report" class="nav-item">
+          <router-link 
+            to="/report" 
+            class="nav-item" 
+            :class="{ 'nav-disabled': !hasRoadmap }"
+            @click.prevent="handleTabClick('/report', $event)"
+          >
             <span class="icon">📔</span> 3. Daily Log
           </router-link>
-          <router-link to="/overview" class="nav-item">
+          <router-link 
+            to="/overview" 
+            class="nav-item" 
+            :class="{ 'nav-disabled': !hasRoadmap }"
+            @click.prevent="handleTabClick('/overview', $event)"
+          >
             <span class="icon">🚀</span> 4. Overview
           </router-link>
         </nav>
@@ -57,12 +72,17 @@
 </template>
 
 <script setup>
-import { ref, onMounted, computed } from 'vue';
+import { ref, onMounted, computed, watch } from 'vue';
+import { useRouter, useRoute } from 'vue-router';
 import axios from 'axios';
 
 const showAnimalModal = ref(true);
 const activeAnimal = ref(null);
 const users = ref([]);
+const hasRoadmap = ref(false);
+
+const router = useRouter();
+const route = useRoute();
 
 const allEmojis = ['🦁','🐰','🦊','🐼','🐨','🐯','🐸','🐵','🐧','🦉','🐺','🐴','🐗','🐢','🐍','🐬','🦖','🦍','🦥','🦦'];
 
@@ -70,6 +90,26 @@ const availableEmojis = computed(() => {
   const used = users.value.map(u => u.emoji);
   return allEmojis.filter(e => !used.includes(e));
 });
+
+const checkRoadmapStatus = async () => {
+  if (!activeAnimal.value) {
+    hasRoadmap.value = false;
+    return;
+  }
+  try {
+    const res = await axios.get('/api/plans');
+    hasRoadmap.value = res.data && res.data.length > 0;
+  } catch (e) {
+    hasRoadmap.value = false;
+  }
+};
+
+const handleTabClick = (path, event) => {
+  if (!hasRoadmap.value) {
+    return;
+  }
+  router.push(path);
+};
 
 const fetchUsers = async () => {
   try {
@@ -79,18 +119,19 @@ const fetchUsers = async () => {
     const savedId = localStorage.getItem('active_animal_id');
     if (savedId) {
       const found = users.value.find(u => u.id === parseInt(savedId));
-      if (found) login(found);
+      if (found) await login(found);
     }
   } catch (e) {
     console.error(e);
   }
 };
 
-const login = (user) => {
+const login = async (user) => {
   activeAnimal.value = user;
   localStorage.setItem('active_animal_id', user.id);
   axios.defaults.headers.common['X-User-Id'] = user.id; 
   showAnimalModal.value = false;
+  await checkRoadmapStatus();
 };
 
 const createUser = async (emoji) => {
@@ -118,6 +159,9 @@ const deleteUser = async () => {
 };
 
 onMounted(fetchUsers);
+
+watch(() => activeAnimal.value, checkRoadmapStatus);
+watch(() => route.path, checkRoadmapStatus);
 </script>
 
 <style scoped>
@@ -167,6 +211,18 @@ onMounted(fetchUsers);
   background: white;
   color: var(--primary, #4f46e5) !important;
   box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+.nav-disabled {
+  opacity: 0.5;
+  cursor: not-allowed !important;
+  color: #94a3b8 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+.nav-disabled:hover {
+  color: #94a3b8 !important;
 }
 
 .content-area {

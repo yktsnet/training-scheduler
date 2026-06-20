@@ -1,12 +1,12 @@
-# 研修スケジュール管理 Webアプリ (Training Scheduler)
+# Training Scheduler
 
 [![CI](https://github.com/yktsnet/training-scheduler/actions/workflows/ci.yml/badge.svg)](https://github.com/yktsnet/training-scheduler/actions/workflows/ci.yml)
 
-新入社員の**自律性を促す**ことを目的とした研修支援ツールです。「システムによる自動管理」と「手書き感覚のアナログ操作」を融合させ、ガチガチの進捗管理ではなく、新人の「主観的な手応え」をベースにメンターが静かに見守るためのアプリケーションです。
+新入社員の自律性を促すことを目的とした研修支援ツールです。「システムによる自動管理」と「手書き感覚のアナログ操作」を融合させ、ガチガチの進捗管理ではなく、新人の「主観的な手応え」をベースにメンターが静かに見守るためのアプリケーションです。
 
 ---
 
-## 💡 コンセプト
+## 💡 Concept
 
 - **主体的プランニング**: システムは枠組みだけを提示し、具体的な計画は新人が自身の言葉で記述します。
 - **内省の可視化**: 機械的な進捗率（％）の計算ではなく、本人の「主観的なズレ（手応え）」をマネージャと共有します。
@@ -15,7 +15,7 @@
 
 ---
 
-## 🔒 セキュリティについて
+## 🔒 Security
 
 本アプリはチーム内の**信頼関係を前提とした小規模利用**を想定して設計されています。
 
@@ -25,16 +25,16 @@
 
 ---
 
-## 🗄 データ構造 (Models)
+## 🗄 Data Structure (Models)
 
-### 0. User (アニマルユーザー)
+### 0. User (Animal Login)
 
 <img src="src/animals.png" width="500" alt="menu-pic">
 
 - **役割**: アプリを利用する個人（新人・メンター）の識別。
 - **項目**: `emoji` (🦁や🐰などのユニークな絵文字)。
 
-### 1. Menu (研修メニュー)
+### 1. Menu (Curriculum)
 
 <img src="src/menu.png" width="500" alt="menu-pic">
 
@@ -42,21 +42,21 @@
 - **項目**: 名称、目安日数、概要、参考URL。
 - ※ `internal/database/menu_config.json` をマスターとして起動時に自動同期します。
 
-### 2. Plan (研修計画)
+### 2. Plan (Training Plan)
 
 <img src="src/plan.png" width="500" alt="plan-pic">
 
 - **役割**: 各メニューに対する具体的な学習計画。
 - **項目**: `content` (自由記述のテキスト)、`user_id`。
 
-### 3. Report (日報)
+### 3. Report (Daily Log)
 
 <img src="src/daily.png" width="500" alt="daily-pic">
 
 - **役割**: 日付単位の事実と内省の記録。
 - **項目**: `date` (YYYY-MM-DD)、`content` (日報内容)、`user_id`。
 
-### 4. Progress (進捗状況)
+### 4. Progress (Status & Condition)
 
 <img src="src/overview.png" width="500" alt="overview-pic">
 
@@ -65,7 +65,7 @@
 
 ---
 
-## 🛠 技術スタック
+## 🛠 Tech Stack
 
 **Frontend**
 - Vue 3 (Composition API)
@@ -80,14 +80,14 @@
 
 ---
 
-## 📦 セットアップ
+## 📦 Setup & Installation
 
-### 前提条件
+### Prerequisites
 
 - Go 1.25+
 - Node.js 20+
 
-### 単一バイナリのビルドと起動
+### Build & Run Single Binary
 
 フロントエンドのビルド → Go バイナリへの embed → 起動を一連で行います。
 
@@ -101,7 +101,7 @@ make build
 
 ブラウザで http://localhost:5000 にアクセス。
 
-### 開発モード（フロント・バック分離）
+### Development Mode
 
 ```bash
 # 初回のみ: go:embed 用のスタブ作成
@@ -114,7 +114,7 @@ make dev-back
 make dev-front
 ```
 
-### テスト実行
+### Running Tests
 
 ```bash
 make test
@@ -126,18 +126,28 @@ make test
 
 ## 🚀 CI/CD
 
-### CI（自動テスト・ビルド確認）
+### CI (Continuous Integration)
 
 `main` / `go-dev` への push および pull request 時に GitHub Actions で自動実行されます。
 
 1. Go テスト (`go test ./internal/...`)
 2. フロントエンドビルド + Go バイナリビルドの疎通確認
 
-### CD（自動デプロイ）
+### CD (Continuous Deployment)
 
-`main` への push 時に VPS へ自動デプロイします。
+`main` ブランチへのプッシュ時に、Tailscale VPN 経由で対象サーバーへ自動デプロイします。
 
-#### 初回セットアップ
+#### デプロイ設計と技術選定の判断基準 (Tailscale経由プッシュ型自動デプロイ)
+
+本プロジェクトのデプロイは、クラウド上の CI サービス（GitHub Actions）から実環境へ直接リリースを行う **「プッシュ（Push）型自動デプロイ方式」** を採用しています。
+
+* **構成の前提**: テスト・ビルド・デプロイの一連を GitHub Actions 上で完結させ、ビルドログと成否を GitHub に一元管理します。
+* **VPN（Tailscale）を用いたセキュアな一時接続**:
+  オンプレミス環境やプライベートネットワーク内のサーバーに対してデプロイを行う際、インターネット上に SSH ポート（22）を直接開放することはセキュリティ上の大きな脅威となります。本システムでは、デプロイ実行時のみ GitHub Actions ランナーから一時的に Tailscale（閉域網 VPN）へ接続させ、認証されたセキュアな経路を通じてのみ SSH デプロイを行うことで、高い開発効率とインフラセキュリティを両立しています。
+* **物理サーバーのビルド負荷軽減**:
+  Go のビルドや Node.js のビルド処理はすべて GitHub Actions（クラウド環境）側で行われ、最適化された単一バイナリのみがサーバーに転送されます。デプロイ時のオンプレミスサーバーの CPU やメモリ負荷をほぼゼロに抑え、本番稼働中のサービスへの影響を最小限に抑えています。
+
+#### Initial Setup
 
 **1. GitHub Secrets の登録**
 
@@ -145,32 +155,33 @@ make test
 
 | Secret 名 | 内容 |
 |---|---|
-| `VPS_HOST` | VPS のホスト名または IP |
-| `VPS_USER` | SSH ログインユーザー名 |
+| `DEPLOY_HOST` | デプロイ先サーバーのホスト名または IP |
+| `DEPLOY_USER` | デプロイ用 SSH ログインユーザー名 |
 | `SSH_PRIVATE_KEY` | SSH 秘密鍵（`~/.ssh/id_ed25519` 等の中身） |
+| `TS_OAUTH_CLIENT_ID` | Tailscale OAuth Client ID |
+| `TS_OAUTH_SECRET` | Tailscale OAuth Client Secret |
 
-**2. VPS 側の sudoers 設定**
+**2. デプロイ先サーバー側の sudoers 設定**
 
-デプロイユーザーが `systemctl` をパスワードなしで実行できるよう設定：
+デプロイユーザーがサービス再起動やバイナリの配置をパスワードなしで実行できるよう設定します。
 
 ```bash
-sudo visudo -f /etc/sudoers.d/training-app
+sudo visudo -f /etc/sudoers.d/training-scheduler
 ```
 
-以下を追記：
+以下を追記します（ユーザー名や配置パスは環境に合わせて調整してください）：
 
 ```
 YOUR_USER ALL=(ALL) NOPASSWD: \
-  /bin/systemctl stop training-app, \
-  /bin/systemctl start training-app, \
-  /bin/mv /tmp/training-app /opt/training-scheduler/training-app, \
-  /bin/chmod +x /opt/training-scheduler/training-app
+  /usr/bin/systemctl restart training-scheduler, \
+  /usr/bin/mv /tmp/training-app /opt/training-scheduler/training-app, \
+  /usr/bin/chmod +x /opt/training-scheduler/training-app
 ```
 
 **3. systemd サービスファイルの配置（未設置の場合）**
 
 ```ini
-# /etc/systemd/system/training-app.service
+# /etc/systemd/system/training-scheduler.service
 [Unit]
 Description=Training Scheduler App
 After=network.target
@@ -189,7 +200,7 @@ WantedBy=multi-user.target
 
 ```bash
 sudo systemctl daemon-reload
-sudo systemctl enable training-app
+sudo systemctl enable training-scheduler
 ```
 
 
