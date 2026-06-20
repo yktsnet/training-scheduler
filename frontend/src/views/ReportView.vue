@@ -29,7 +29,7 @@
                 @click.stop="day.isEditing = false" 
                 :class="{ 'is-selected': !day.isEditing }"
                 class="control-btn"
-              >👁️ View</button>
+              >👀 View</button>
               <button 
                 @click.stop="day.isEditing = true" 
                 :class="{ 'is-selected': day.isEditing }"

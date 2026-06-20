@@ -275,13 +275,16 @@ watch(() => route.path, checkRoadmapStatus);
 .animal-overlay {
   position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
   background: rgba(15, 23, 42, 0.8); backdrop-filter: blur(8px);
-  display: flex; justify-content: center; align-items: center; z-index: 2000;
+  display: flex; justify-content: center; align-items: flex-start; z-index: 2000;
+  overflow-y: auto;
+  padding: 2rem 0;
 }
 
 .animal-modal {
   background: #fff; padding: 3rem; border-radius: 20px;
   max-width: 600px; width: 90%; text-align: center;
   box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+  margin: auto;
 }
 
 .animal-grid {
@@ -351,6 +354,18 @@ watch(() => route.path, checkRoadmapStatus);
     width: 44px;
     height: 44px;
     font-size: 1.3rem;
+  }
+  .animal-modal {
+    padding: 1.5rem;
+    border-radius: 16px;
+  }
+  .animal-grid {
+    margin: 1rem 0;
+    gap: 8px;
+  }
+  .animal-btn {
+    font-size: 1.6rem;
+    padding: 8px;
   }
 }
 </style>

@@ -29,7 +29,7 @@
                 @click.stop="plan.isEditing = false" 
                 :class="{ 'is-selected': !plan.isEditing }"
                 class="control-btn"
-              >👁️ View</button>
+              >👀 View</button>
               <button 
                 @click.stop="plan.isEditing = true" 
                 :class="{ 'is-selected': plan.isEditing }"
