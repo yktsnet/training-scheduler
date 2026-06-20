@@ -1,9 +1,7 @@
 <template>
   <div class="plan-view">
     <div class="view-header">
-      <h2 class="title-en">
-        Roadmap Details <Edit3 class="title-icon" :size="22" />
-      </h2>
+      <h2 class="title-en">Roadmap Details ✍️</h2>
       <p class="subtitle">カードをクリックして編集、外をクリックして保存。番号はメニューの共通IDと連動しています。</p>
     </div>
 
@@ -31,16 +29,12 @@
                 @click.stop="plan.isEditing = false" 
                 :class="{ 'is-selected': !plan.isEditing }"
                 class="control-btn"
-              >
-                <Eye class="btn-icon" :size="14" /> View
-              </button>
+              >👁️ View</button>
               <button 
                 @click.stop="plan.isEditing = true" 
                 :class="{ 'is-selected': plan.isEditing }"
                 class="control-btn"
-              >
-                <Edit class="btn-icon" :size="14" /> Edit
-              </button>
+              >✏️ Edit</button>
             </div>
           </div>
         </div>
@@ -81,7 +75,6 @@
 <script setup>
 import { ref, onMounted } from 'vue';
 import axios from 'axios';
-import { Edit3, Eye, Edit } from 'lucide-vue-next';
 
 const plans = ref([]);
 const isLoading = ref(true);

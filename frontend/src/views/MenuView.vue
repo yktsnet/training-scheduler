@@ -1,9 +1,7 @@
 <template>
   <div class="menu-view">
     <div class="view-header">
-      <h2 class="title-en">
-        Curriculum Selection <Search class="title-icon" :size="22" />
-      </h2>
+      <h2 class="title-en">Curriculum Selection 🔍</h2>
       <p class="subtitle">研修項目を選択してください。番号順に進めていくのがスムーズです。</p>
       
       <!-- 追加：チェックが0件のときに表示するアラートメッセージ -->
@@ -22,16 +20,17 @@
         :class="{ 'is-selected': selectedIds.includes(menu.id) }"
       >
         <div class="card-header">
-          <div class="header-top">
-            <div class="header-left">
-              <div class="index-number">{{ index + 1 }}</div>
-              
-              <div class="checkbox-container">
-                <input type="checkbox" :id="'m-'+menu.id" :value="menu.id" v-model="selectedIds">
-                <label :for="'m-'+menu.id" class="custom-check"></label>
-              </div>
+          <div class="header-left">
+            <div class="index-number">{{ index + 1 }}</div>
+            
+            <div class="checkbox-container">
+              <input type="checkbox" :id="'m-'+menu.id" :value="menu.id" v-model="selectedIds">
+              <label :for="'m-'+menu.id" class="custom-check"></label>
             </div>
+          </div>
 
+          <div class="header-main-content">
+            <h3 class="menu-name">{{ menu.name }}</h3>
             <div class="header-meta">
               <span class="days-badge">{{ menu.days }} Days</span>
               <div class="difficulty-stars">
@@ -39,29 +38,27 @@
               </div>
             </div>
           </div>
-
-          <h3 class="menu-name">{{ menu.name }}</h3>
         </div>
 
         <div class="card-content">
           <div class="info-block-main">
-            <h4 class="block-label"><FileText class="label-icon" :size="12" /> SUMMARY</h4>
+            <h4 class="block-label">📝 SUMMARY</h4>
             <p class="block-text">{{ menu.summary }}</p>
             
             <div class="link-action">
               <a :href="menu.doc_link" target="_blank" class="reference-card-btn">
-                <BookOpen class="btn-icon" :size="14" /> View Reference Docs
+                <span class="icon">📖</span> View Reference Docs
               </a>
             </div>
           </div>
           
           <div class="info-block-sub">
             <div class="sub-item">
-              <h4 class="block-label"><Wrench class="label-icon" :size="12" /> SKILLS</h4>
+              <h4 class="block-label">🛠️ SKILLS</h4>
               <p class="block-text">{{ menu.skills }}</p>
             </div>
             <div class="sub-item">
-              <h4 class="block-label"><GraduationCap class="label-icon" :size="12" /> PREREQUISITE</h4>
+              <h4 class="block-label">🎓 PREREQUISITE</h4>
               <p class="block-text">{{ menu.prerequisites }}</p>
             </div>
           </div>
@@ -75,7 +72,7 @@
         @click="generatePlans" 
         :disabled="selectedIds.length === 0"
       >
-        Generate Roadmap <Sparkles class="btn-icon" :size="16" />
+        Generate Roadmap ✨
       </button>
     </div>
   </div>
@@ -85,7 +82,6 @@
 import { ref, onMounted } from 'vue';
 import axios from 'axios';
 import { useRouter } from 'vue-router';
-import { Search, BookOpen, Wrench, GraduationCap, Sparkles, FileText } from 'lucide-vue-next';
 
 const menus = ref([]);
 const selectedIds = ref([]);
@@ -154,8 +150,7 @@ onMounted(fetchMenus);
 .menu-card.is-selected { border-color: #4f46e5; background-color: #f8faff; box-shadow: 0 0 0 1px #4f46e5; }
 
 .card-header {
-  display: grid;
-  grid-template-columns: auto 1fr auto;
+  display: flex;
   align-items: center;
   gap: 1.25rem;
   margin-bottom: 1.5rem;
@@ -163,15 +158,18 @@ onMounted(fetchMenus);
   border-bottom: 2px solid #f1f5f9;
 }
 
-.header-top {
-  display: contents;
-}
-
 .header-left {
-  grid-column: 1;
   display: flex;
   align-items: center;
   gap: 15px;
+}
+
+.header-main-content {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.5rem;
 }
 
 /* インデックス番号のスタイル */
@@ -183,7 +181,6 @@ onMounted(fetchMenus);
 .is-selected .index-number { color: #4f46e5; }
 
 .menu-name {
-  grid-column: 2;
   font-size: 1.3rem;
   font-weight: 800;
   margin: 0;
@@ -191,7 +188,6 @@ onMounted(fetchMenus);
 }
 
 .header-meta {
-  grid-column: 3;
   display: flex;
   align-items: center;
   gap: 1rem;
@@ -275,31 +271,29 @@ onMounted(fetchMenus);
   /* カードヘッダーのスマホレイアウト */
   .card-header {
     display: flex;
-    flex-direction: column;
-    align-items: stretch;
+    flex-direction: row;
+    align-items: flex-start;
     gap: 0.75rem;
     margin-bottom: 1rem;
     padding-bottom: 0.75rem;
   }
-  .header-top {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    width: 100%;
-  }
   .header-left {
-    grid-column: auto;
     display: flex;
     align-items: center;
     gap: 12px;
+    margin-top: 2px;
+  }
+  .header-main-content {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.35rem;
   }
   .menu-name {
-    grid-column: auto;
     font-size: 1.15rem;
     line-height: 1.4;
   }
   .header-meta {
-    grid-column: auto;
     display: flex;
     align-items: center;
     gap: 0.75rem;
@@ -310,9 +304,6 @@ onMounted(fetchMenus);
     font-size: 0.7rem;
   }
   .difficulty-stars {
-    grid-column: auto;
-    grid-row: auto;
-    margin-top: 0;
     font-size: 0.85rem;
   }
   

@@ -1,9 +1,7 @@
 <template>
   <div class="overview-view">
     <div class="view-header">
-      <h2 class="title-en">
-        Training Dashboard <Rocket class="title-icon" :size="22" />
-      </h2>
+      <h2 class="title-en">Training Dashboard 🚀</h2>
       <p class="subtitle">現在の進捗とコンディションを客観的に把握・記録します。</p>
     </div>
 
@@ -28,8 +26,7 @@
           </div>
           <div class="header-right">
             <button @click="toggleComplete(item)" class="toggle-btn" :title="item.is_completed ? '進行中に戻す' : '完了にする'">
-              <CheckCircle2 v-if="item.is_completed" class="text-success" :size="18" />
-              <Play v-else class="text-primary" :size="18" />
+              {{ item.is_completed ? '✅' : '🏃' }}
             </button>
           </div>
         </div>
@@ -47,11 +44,11 @@
 
           <div class="settings-area">
             <div class="input-group">
-              <label><Calendar class="label-icon" :size="12" /> 開始日</label>
+              <label>📅 開始日</label>
               <input type="date" v-model="item.start_date" @change="save(item)">
             </div>
             <div class="input-group">
-              <label><Clock class="label-icon" :size="12" /> 目標日数</label>
+              <label>⏱️ 目標日数</label>
               <input type="number" v-model="item.target_days" @blur="save(item)">
             </div>
           </div>
@@ -75,7 +72,7 @@
           </div>
 
           <div class="memo-section">
-            <label><FileText class="label-icon" :size="12" /> 振り返り・メモ</label>
+            <label>📝 振り返り・メモ</label>
             <textarea 
               v-model="item.status_memo" 
               placeholder="今の状況を記録（クリックで入力）" 
@@ -95,7 +92,6 @@
 import { ref, onMounted } from 'vue';
 import axios from 'axios';
 import { eachDayOfInterval, isWeekend, parseISO, isAfter, startOfDay } from 'date-fns';
-import { Rocket, Calendar, Clock, FileText, CheckCircle2, Play } from 'lucide-vue-next';
 
 const items = ref([]);
 const isLoading = ref(true);

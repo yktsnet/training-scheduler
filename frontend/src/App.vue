@@ -28,17 +28,12 @@
 
     <template v-if="activeAnimal && !showAnimalModal">
       <header class="main-header">
-        <h1 class="brand">
-          <Calendar class="brand-icon" :size="24" /> Training Scheduler
-        </h1>
-        <div class="current-animal" @click="showAnimalModal = true" role="button" aria-label="Change character">
-          Playing as: {{ activeAnimal.emoji }}
-          <Settings class="settings-icon" :size="14" />
-        </div>
+        <h1 class="brand">Training Scheduler 📅</h1>
+        <div class="current-animal">Playing as: {{ activeAnimal.emoji }}</div>
         
         <nav class="tab-nav">
           <router-link to="/" class="nav-item">
-            <Search class="nav-icon" :size="16" /> 1. Select Menu
+            <span class="icon">🔍</span> 1. Select Menu
           </router-link>
           <router-link 
             to="/plan" 
@@ -46,7 +41,7 @@
             :class="{ 'nav-disabled': !hasRoadmap }"
             @click.prevent="handleTabClick('/plan', $event)"
           >
-            <Edit class="nav-icon" :size="16" /> 2. Edit Plan
+            <span class="icon">✍️</span> 2. Edit Plan
           </router-link>
           <router-link 
             to="/report" 
@@ -54,7 +49,7 @@
             :class="{ 'nav-disabled': !hasRoadmap }"
             @click.prevent="handleTabClick('/report', $event)"
           >
-            <BookOpen class="nav-icon" :size="16" /> 3. Daily Log
+            <span class="icon">📔</span> 3. Daily Log
           </router-link>
           <router-link 
             to="/overview" 
@@ -62,7 +57,7 @@
             :class="{ 'nav-disabled': !hasRoadmap }"
             @click.prevent="handleTabClick('/overview', $event)"
           >
-            <Rocket class="nav-icon" :size="16" /> 4. Overview
+            <span class="icon">🚀</span> 4. Overview
           </router-link>
         </nav>
       </header>
@@ -70,6 +65,8 @@
       <main class="content-area">
         <router-view :key="$route.fullPath" />
       </main>
+
+      <button class="fab-settings" @click="showAnimalModal = true" aria-label="Settings">🐾</button>
     </template>
   </div>
 </template>
@@ -78,7 +75,6 @@
 import { ref, onMounted, computed, watch } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
 import axios from 'axios';
-import { Calendar, Settings, Search, Edit, BookOpen, Rocket } from 'lucide-vue-next';
 
 const showAnimalModal = ref(true);
 const activeAnimal = ref(null);
@@ -184,25 +180,7 @@ watch(() => route.path, checkRoadmapStatus);
   gap: 1rem;
 }
 
-.brand-icon {
-  vertical-align: -3px;
-  margin-right: 8px;
-  color: var(--primary);
-}
-
-.settings-icon {
-  margin-left: 6px;
-  color: #64748b;
-  transition: transform 0.3s ease;
-}
-
-.current-animal:hover .settings-icon {
-  transform: rotate(45deg);
-  color: #0f172a;
-}
-
-.nav-icon {
-  vertical-align: -3px;
+.icon {
   margin-right: 6px;
 }
 
@@ -264,26 +242,34 @@ watch(() => route.path, checkRoadmapStatus);
 }
 
 .current-animal {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  background: #f1f5f9;
-  border: 1px solid #cbd5e1;
-  padding: 6px 14px;
-  border-radius: 50px;
-  font-size: 0.85rem;
-  color: #475569;
-  cursor: pointer;
-  transition: all 0.2s;
+  font-size: 1rem;
+  font-weight: 700;
+  color: #64748b;
   margin-bottom: 1.5rem;
-  user-select: none;
 }
 
-.current-animal:hover {
-  background: #e2e8f0;
-  border-color: #94a3b8;
-  color: #0f172a;
-  transform: translateY(-1px);
+.fab-settings {
+  position: fixed;
+  top: 30px;
+  right: 30px;
+  width: 54px;
+  height: 54px;
+  border-radius: 50%;
+  background: #fff;
+  border: 2px solid #cbd5e1;
+  font-size: 1.6rem;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  cursor: pointer;
+  transition: all 0.2s;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.fab-settings:hover {
+  transform: scale(1.1) rotate(15deg);
+  box-shadow: 0 6px 16px rgba(0,0,0,0.15);
 }
 
 .animal-overlay {
@@ -358,6 +344,13 @@ watch(() => route.path, checkRoadmapStatus);
     text-align: center;
     min-width: max-content;
     border-radius: 6px;
+  }
+  .fab-settings {
+    top: 15px;
+    right: 15px;
+    width: 44px;
+    height: 44px;
+    font-size: 1.3rem;
   }
 }
 </style>
