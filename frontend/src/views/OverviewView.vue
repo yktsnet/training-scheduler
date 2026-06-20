@@ -243,8 +243,31 @@ onMounted(fetchOverviews);
 
 .is-completed { opacity: 0.6; filter: grayscale(0.5); }
 
-/* レスポンシブ：スマホでは1列に */
+/* レスポンシブ：スマホでの調整 */
 @media (max-width: 850px) {
   .list-container { grid-template-columns: 1fr; }
+}
+
+@media (max-width: 640px) {
+  .overview-view { padding-bottom: 40px; }
+  .view-header { margin-bottom: 1.5rem; }
+  .title-en { font-size: 1.4rem; }
+  .subtitle { font-size: 0.85rem; }
+  .list-container { gap: 1.5rem; }
+  
+  .dash-header {
+    padding: 1rem;
+  }
+  .dash-body {
+    padding: 1rem;
+    gap: 1.25rem;
+  }
+  .day-count {
+    font-size: 1.8rem;
+  }
+  .settings-area {
+    grid-template-columns: 1fr;
+    gap: 0.75rem;
+  }
 }
 </style>

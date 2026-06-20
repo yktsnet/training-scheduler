@@ -196,4 +196,49 @@ textarea { background-image: linear-gradient(#f1f5f9 1px, transparent 1px); back
 @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
 .fade-enter-active, .fade-leave-active { transition: opacity 0.1s ease; }
 .fade-enter-from, .fade-leave-to { opacity: 0; }
+
+/* ========== モバイル対応のレスポンシブスタイル ========== */
+@media (max-width: 768px) {
+  .plan-view { padding-bottom: 40px; }
+  .view-header { margin-bottom: 1.5rem; }
+  .title-en { font-size: 1.4rem; }
+  .subtitle { font-size: 0.85rem; }
+  
+  .list-container { gap: 1.5rem; }
+  
+  .card-header {
+    padding: 1rem;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+  .header-left {
+    width: 100%;
+    align-items: flex-start;
+  }
+  .header-right {
+    width: 100%;
+  }
+  .segmented-control {
+    width: 100%;
+    display: flex;
+  }
+  .control-btn {
+    flex: 1;
+    text-align: center;
+    padding: 8px 16px;
+    font-size: 0.8rem;
+  }
+  .item-name {
+    font-size: 1.1rem;
+  }
+  textarea, .rendered-view {
+    padding: 1.25rem;
+    min-height: 250px;
+    font-size: 0.95rem;
+  }
+  .card-footer {
+    padding: 0.75rem 1rem;
+  }
+}
 </style>

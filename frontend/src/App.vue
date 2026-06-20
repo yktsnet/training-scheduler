@@ -29,7 +29,9 @@
     <template v-if="activeAnimal && !showAnimalModal">
       <header class="main-header">
         <h1 class="brand">Training Scheduler 📅</h1>
-        <div class="current-animal">Playing as: {{ activeAnimal.emoji }}</div>
+        <div class="current-animal" @click="showAnimalModal = true" role="button" aria-label="Change character">
+          Playing as: {{ activeAnimal.emoji }} 🐾
+        </div>
         
         <nav class="tab-nav">
           <router-link to="/" class="nav-item">
@@ -65,8 +67,6 @@
       <main class="content-area">
         <router-view :key="$route.fullPath" />
       </main>
-
-      <button class="fab-settings" @click="showAnimalModal = true">🐾</button>
     </template>
   </div>
 </template>
@@ -234,25 +234,27 @@ watch(() => route.path, checkRoadmapStatus);
   to { opacity: 1; transform: translateY(0); }
 }
 
-/* ========== 追加したアニマル用スタイル ========== */
 .current-animal {
-  font-size: 1rem;
-  font-weight: 700;
-  color: #64748b;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: #f1f5f9;
+  border: 1px solid #cbd5e1;
+  padding: 6px 14px;
+  border-radius: 50px;
+  font-size: 0.85rem;
+  color: #475569;
+  cursor: pointer;
+  transition: all 0.2s;
   margin-bottom: 1.5rem;
+  user-select: none;
 }
 
-.fab-settings {
-  position: fixed; bottom: 30px; right: 30px;
-  width: 60px; height: 60px; border-radius: 50%;
-  background: #fff; border: 2px solid #e2e8f0; font-size: 1.8rem;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.1); cursor: pointer;
-  transition: all 0.2s; z-index: 1000;
-}
-
-.fab-settings:hover {
-  transform: scale(1.1);
-  box-shadow: 0 6px 16px rgba(0,0,0,0.15);
+.current-animal:hover {
+  background: #e2e8f0;
+  border-color: #94a3b8;
+  color: #0f172a;
+  transform: translateY(-1px);
 }
 
 .animal-overlay {
@@ -292,4 +294,41 @@ watch(() => route.path, checkRoadmapStatus);
 .btn-delete:hover { text-decoration: underline; }
 .btn-close { background: #cbd5e1; padding: 10px 20px; border-radius: 8px; border: none; cursor: pointer; font-weight: 700; }
 .btn-close:hover { background: #94a3b8; color: white; }
+
+/* ========== モバイル対応のレスポンシブスタイル ========== */
+@media (max-width: 640px) {
+  .app-container {
+    padding: 1rem 0.75rem;
+  }
+  .main-header {
+    margin-bottom: 1.5rem;
+  }
+  .brand {
+    font-size: 1.5rem;
+  }
+  .current-animal {
+    margin-bottom: 1rem;
+  }
+  .tab-nav {
+    display: flex;
+    width: 100%;
+    overflow-x: auto;
+    white-space: nowrap;
+    border-radius: 8px;
+    padding: 2px;
+    gap: 2px;
+    scrollbar-width: none; /* Firefox */
+  }
+  .tab-nav::-webkit-scrollbar {
+    display: none; /* Safari/Chrome */
+  }
+  .nav-item {
+    padding: 8px 12px;
+    font-size: 0.8rem;
+    flex: 1;
+    text-align: center;
+    min-width: max-content;
+    border-radius: 6px;
+  }
+}
 </style>

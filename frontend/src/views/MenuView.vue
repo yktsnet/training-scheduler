@@ -203,4 +203,83 @@ onMounted(fetchMenus);
 .fade-enter-from, .fade-leave-to {
   opacity: 0;
 }
+
+/* ========== モバイル対応のレスポンシブスタイル ========== */
+@media (max-width: 768px) {
+  .menu-view { padding-bottom: 100px; }
+  .view-header { margin-bottom: 1.5rem; }
+  .title-en { font-size: 1.4rem; }
+  .subtitle { font-size: 0.85rem; }
+  
+  .menu-card {
+    padding: 1.25rem;
+    border-radius: 12px;
+  }
+  
+  /* カードヘッダーのグリッド化 */
+  .card-header {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 0.5rem 0.75rem;
+    margin-bottom: 1rem;
+    padding-bottom: 0.75rem;
+  }
+  .header-left {
+    grid-column: 1;
+    grid-row: 1 / 3;
+    align-self: center;
+  }
+  .title-section {
+    grid-column: 2;
+    grid-row: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+  }
+  .menu-name {
+    font-size: 1.1rem;
+    line-height: 1.35;
+  }
+  .days-badge {
+    align-self: flex-start;
+    padding: 2px 8px;
+    font-size: 0.7rem;
+  }
+  .difficulty-stars {
+    grid-column: 2;
+    grid-row: 2;
+    margin-top: -2px;
+    font-size: 0.85rem;
+  }
+  
+  /* カードコンテンツの1カラム化 */
+  .card-content {
+    grid-template-columns: 1fr;
+    gap: 1.25rem;
+  }
+  
+  .info-block-sub {
+    padding-left: 0;
+    border-left: none;
+    border-top: 1px solid #f1f5f9;
+    padding-top: 1.25rem;
+    gap: 1.25rem;
+  }
+  
+  .link-action {
+    margin-top: 1rem;
+  }
+  
+  /* フッターボタンの最適化 */
+  .footer-container {
+    padding: 15px;
+  }
+  .btn-generate {
+    width: 100%;
+    padding: 12px 24px;
+    font-size: 1rem;
+    border-radius: 10px;
+  }
+}
 </style>
