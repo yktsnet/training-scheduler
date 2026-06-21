@@ -3,7 +3,7 @@ id: 01
 skill: pr-workflow
 branch-slug: repo-hygiene
 github_issue: 1
-status: open
+status: close
 type: cleanup
 対象: context/conventions.md, context/structure.md, .gitignore
 内容: repo-guide.md の衛生基準に対する違反を解消する。0バイトの空ファイルを除去し、.gitignore から当スタック（Go + Vue）に無関係な boilerplate を削除する。
