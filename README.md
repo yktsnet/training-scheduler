@@ -1,6 +1,7 @@
 # Training Scheduler
 
 [![CI](https://github.com/yktsnet/training-scheduler/actions/workflows/ci.yml/badge.svg)](https://github.com/yktsnet/training-scheduler/actions/workflows/ci.yml)
+[![Deploy](https://github.com/yktsnet/training-scheduler/actions/workflows/deploy.yml/badge.svg)](https://github.com/yktsnet/training-scheduler/actions/workflows/deploy.yml)
 
 新入社員の自律性を促すことを目的とした研修支援ツールです。「システムによる自動管理」と「手書き感覚のアナログ操作」を融合させ、ガチガチの進捗管理ではなく、新人の「主観的な手応え」をベースにメンターが静かに見守るためのアプリケーションです。
 
