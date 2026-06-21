@@ -6,6 +6,7 @@ import (
 	"encoding/json"
 	"net/http"
 	"os"
+	"path/filepath"
 	"strconv"
 	"training-scheduler/internal/database"
 	"training-scheduler/internal/models"
@@ -198,5 +199,9 @@ func (h *AdminHandler) rewriteMenuConfigJSON() error {
 	}
 
 	externalPath := database.GetMenuConfigPath()
+	dir := filepath.Dir(externalPath)
+	if err := os.MkdirAll(dir, 0755); err != nil {
+		return err
+	}
 	return os.WriteFile(externalPath, data, 0644)
 }
