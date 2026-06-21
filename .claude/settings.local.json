@@ -1,0 +1,7 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(grep -E '\\\\.\\(db|sqlite|exe|dll|so\\)$|node_modules|^dist/')"
+    ]
+  }
+}
