@@ -1,7 +1,8 @@
 <template>
   <div class="app-container">
     
-    <div v-if="showAnimalModal" class="animal-overlay">
+    <!-- アニマル選択モーダル（管理者ルートでは非表示） -->
+    <div v-if="showAnimalModal && !isAdminRoute" class="animal-overlay">
       <div class="animal-modal">
         <h2>Who are you? 🐾</h2>
         <p>あなたのアニマルを選んでください</p>
@@ -19,6 +20,10 @@
           </button>
         </div>
 
+        <div class="admin-link-wrapper">
+          <router-link to="/admin/login" @click="showAnimalModal = false" class="admin-link">🐾 管理者としてログイン</router-link>
+        </div>
+
         <div v-if="activeAnimal" class="danger-zone">
           <button @click="deleteUser" class="btn-delete">🗑️ このアニマルを初期化(削除)する</button>
           <button @click="showAnimalModal = false" class="btn-close">戻る</button>
@@ -26,7 +31,15 @@
       </div>
     </div>
 
-    <template v-if="activeAnimal && !showAnimalModal">
+    <!-- 管理者用ルートの場合：ヘッダーやモーダル制御なしで直接描画 -->
+    <template v-if="isAdminRoute">
+      <main class="content-area">
+        <router-view :key="$route.fullPath" />
+      </main>
+    </template>
+
+    <!-- 一般アニマルユーザー用ルートの場合 -->
+    <template v-else-if="activeAnimal && !showAnimalModal">
       <header class="main-header">
         <h1 class="brand">Training Scheduler 📅</h1>
         <div class="current-animal">Playing as: {{ activeAnimal.emoji }}</div>
@@ -83,6 +96,8 @@ const hasRoadmap = ref(false);
 
 const router = useRouter();
 const route = useRoute();
+
+const isAdminRoute = computed(() => route.path.startsWith('/admin'));
 
 const allEmojis = ['🦁','🐰','🦊','🐼','🐨','🐯','🐸','🐵','🐧','🦉','🐺','🐴','🐗','🐢','🐍','🐬','🦖','🦍','🦥','🦦'];
 
@@ -312,6 +327,22 @@ watch(() => route.path, checkRoadmapStatus);
 .btn-delete:hover { text-decoration: underline; }
 .btn-close { background: #cbd5e1; padding: 10px 20px; border-radius: 8px; border: none; cursor: pointer; font-weight: 700; }
 .btn-close:hover { background: #94a3b8; color: white; }
+
+.admin-link-wrapper {
+  margin-top: 1.5rem;
+  border-top: 1px dashed #e2e8f0;
+  padding-top: 1rem;
+}
+.admin-link {
+  color: var(--text-muted, #64748b);
+  font-size: 0.85rem;
+  font-weight: 700;
+  text-decoration: none;
+  transition: color 0.2s;
+}
+.admin-link:hover {
+  color: var(--primary, #4f46e5);
+}
 
 /* ========== モバイル対応のレスポンシブスタイル ========== */
 @media (max-width: 640px) {

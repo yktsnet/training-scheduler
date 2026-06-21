@@ -4,6 +4,7 @@
 # 実行順序: frontend build → dist コピー → go build
 build:
 	cd frontend && npm ci && npm run build
+	rm -rf backend/dist
 	cp -r frontend/dist backend/dist
 	cd backend && go build -o training-app .
 

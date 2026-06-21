@@ -1,15 +1,19 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import MenuView from '../views/MenuView.vue'
 import PlanView from '../views/PlanView.vue'
-import ReportView from '../views/ReportView.vue' // 1. 追加
+import ReportView from '../views/ReportView.vue'
 import OverviewView from '../views/OverviewView.vue'
+import AdminLoginView from '../views/AdminLoginView.vue'
+import AdminMenuView from '../views/AdminMenuView.vue'
 import axios from 'axios'
 
 const routes = [
   { path: '/', component: MenuView },
   { path: '/plan', component: PlanView }, 
-  { path: '/report', component: ReportView }, // 2. calendarからreportへ変更
+  { path: '/report', component: ReportView }, 
   { path: '/overview', component: OverviewView },
+  { path: '/admin/login', component: AdminLoginView },
+  { path: '/admin/menus', component: AdminMenuView },
 ]
 
 export const router = createRouter({
@@ -19,6 +23,11 @@ export const router = createRouter({
 
 // ナビゲーションガード：ロードマップ未生成時の遷移制限
 router.beforeEach(async (to, from, next) => {
+  // 管理者ルートの場合はガードを通さない
+  if (to.path.startsWith('/admin')) {
+    return next()
+  }
+
   const activeAnimalId = localStorage.getItem('active_animal_id')
   if (!activeAnimalId) {
     return next()

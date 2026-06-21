@@ -38,15 +38,5 @@
     "skills": "RESTful設計原則、HTTPメソッド、JSONレスポンス設計、認証（JWT）、テスト",
     "prerequisites": "いずれかの言語でのプログラミング経験、SQLの基本",
     "difficulty": 3
-  },
-  {
-    "id": 5,
-    "name": "フルスタック Web アプリ開発",
-    "days": 20,
-    "doc_link": "https://ja.vuejs.org/guide/introduction",
-    "summary": "フロントエンドからバックエンド・インフラまでを一人で構築します。要件定義・設計・実装・デプロイを通じて、現代的な Web 開発の全体像を掴みます。",
-    "skills": "Vue3、REST API、データベース設計、Docker、CI/CD",
-    "prerequisites": "HTML/CSS/JavaScript の基礎、REST API の基本概念",
-    "difficulty": 4
   }
 ]

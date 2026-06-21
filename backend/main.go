@@ -36,19 +36,42 @@ func main() {
 		log.Fatalf("failed to migrate database: %v", err)
 	}
 
-	// 3. マスターデータの初期投入/同期
-	if err := database.SeedMenus(db); err != nil {
-		log.Fatalf("failed to seed menus: %v", err)
+	// 3. マスターデータの初期投入/同期 または デモモード初期化
+	isDemoMode := os.Getenv("DEMO_MODE") == "true"
+	if isDemoMode {
+		log.Println("Demo mode is ENABLED. Seeding demo data...")
+		if err := database.SeedDemoData(db); err != nil {
+			log.Fatalf("failed to seed demo data: %v", err)
+		}
+		// 30分ごとの自動リセット監視 Goroutine を開始
+		go func() {
+			ticker := time.NewTicker(30 * time.Minute)
+			for range ticker.C {
+				log.Println("Checking database drift for demo reset...")
+				if database.HasDemoDrift(db) {
+					log.Println("Drift detected. Resetting database to initial demo state...")
+					if err := database.SeedDemoData(db); err != nil {
+						log.Printf("error during demo reset: %v\n", err)
+					}
+				} else {
+					log.Println("No drift detected in demo database.")
+				}
+			}
+		}()
+	} else {
+		if err := database.SeedMenus(db); err != nil {
+			log.Fatalf("failed to seed menus: %v", err)
+		}
 	}
 
 	// 4. Ginルーターの初期化
 	r := gin.Default()
 
-	// 5. CORSの設定 (開発環境用。本番の単一バイナリ運用では実質不要ですが残しておいても害はありません)
+	// 5. CORSの設定 (開発環境用)
 	r.Use(cors.New(cors.Config{
 		AllowOrigins:     []string{"http://localhost:5173", "http://localhost:5000"},
 		AllowMethods:     []string{"GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"},
-		AllowHeaders:     []string{"Origin", "Content-Type", "Accept", "X-User-Id"},
+		AllowHeaders:     []string{"Origin", "Content-Type", "Accept", "X-User-Id", "X-Admin-Token"},
 		ExposeHeaders:    []string{"Content-Length"},
 		AllowCredentials: true,
 		MaxAge:           12 * time.Hour,
@@ -60,6 +83,7 @@ func main() {
 	plansHandler := &handlers.PlansHandler{DB: db}
 	reportsHandler := &handlers.ReportsHandler{DB: db}
 	overviewHandler := &handlers.OverviewHandler{DB: db}
+	adminHandler := &handlers.AdminHandler{DB: db}
 
 	// 6. ルーティングの登録
 	// APIグループ化
@@ -80,6 +104,17 @@ func main() {
 
 		api.GET("/overview", overviewHandler.GetOverview)
 		api.POST("/overview", overviewHandler.UpdateOverview)
+
+		// 管理者用ルート
+		api.POST("/admin/login", adminHandler.Login)
+		admin := api.Group("/admin")
+		admin.Use(handlers.AdminAuthMiddleware())
+		{
+			admin.GET("/menus", adminHandler.GetMenus)
+			admin.POST("/menus", adminHandler.CreateMenu)
+			admin.PUT("/menus/:id", adminHandler.UpdateMenu)
+			admin.DELETE("/menus/:id", adminHandler.DeleteMenu)
+		}
 	}
 
 	// 7. 静的ファイルとSPAルーティングの設定

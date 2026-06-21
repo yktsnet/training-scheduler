@@ -6,35 +6,64 @@
 
 ---
 
-## 💡 Concept
+## Quick Start
+
+### Prerequisites
+- [Go 1.25+](https://go.dev/)
+- [Node.js 20+](https://nodejs.org/)
+
+### Setup
+リポジトリをクローンしてビルドを実行し、Webサーバーを起動します。
+
+```bash
+# プロジェクトのビルド（フロントエンドのビルドとGoへの埋め込みを一括実行）
+make build
+
+# デモモード（30分ごとの自動リセット有効）かつ初期パスワードを指定して起動
+DEMO_MODE=true ADMIN_PASSWORD=admin123 ./backend/training-app
+```
+
+- アプリ起動URL: http://localhost:5000
+  - ※起動ポートは環境変数 `PORT` を指定することで変更可能です（例: `PORT=8080 ./backend/training-app`）。
+- 管理者ログイン用の初期パスワード: `admin123`
+
+---
+
+## Overview
+
+本ツールは、チーム内の信頼関係を前提とした小規模チーム向けの研修プランナーです。一般的なガントチャート型の厳格な進捗管理ツールとは異なり、新人の主体的な内省と、メンターのゆるやかな見守りをサポートすることに特化しています。
 
 - **主体的プランニング**: システムは枠組みだけを提示し、具体的な計画は新人が自身の言葉で記述します。
 - **内省の可視化**: 機械的な進捗率（％）の計算ではなく、本人の「主観的なズレ（手応え）」をマネージャと共有します。
 - **非干渉の監視**: マネージャは新人の自律を妨げず、ダッシュボードから状況を静かに見守り、必要な時だけサポートに入ります。
 - **ゆるやかな識別（アニマル・ログイン）**: パスワード等による厳格な認証ではなく、動物の絵文字を選ぶだけのシンプルなログインを採用。チーム内の信頼関係を前提とした、遊び心のあるアカウント管理です。
 
+### Demo Mode & Admin Panel
+本番やデモ用にURLを一般公開する際の安全性を担保するため、以下の機能が備わっています。
+
+- **管理者機能 (Admin Panel)**:
+  - アニマル選択画面の最下部「🐾 管理者としてログイン」から、管理者用パスワードでログインできます。
+  - カリキュラム（メニュー）の追加・編集・削除をブラウザ上で動的に行えます。変更はDBと `menu_config.json` に即座に同期されます。
+- **デモモード (Demo Mode)**:
+  - 環境変数 `DEMO_MODE=true` で起動すると有効化されます。
+  - 30分ごとにDBの変更差分を検知し、データが書き換えられている場合に初期ダミーデータ（🐶 ユーザー、Git計画、2日分の日報、進捗）へ自動リセットします。
+- **デモモードの停止方法**:
+  - 起動時に環境変数 `DEMO_MODE` を指定しない、または `DEMO_MODE=false` を設定することで、30分自動リセット機能を無効化できます（通常の本番運用では無効にしてください）。
+- **パスワードの変更方法**:
+  - 起動時に環境変数 `ADMIN_PASSWORD=新しいパスワード` を指定します。未指定の場合はデフォルト値の `admin123` が使用されます。
+
 ---
 
-## 🔒 Security
+## User Interface
 
-本アプリはチーム内の**信頼関係を前提とした小規模利用**を想定して設計されています。
-
-- ログインは絵文字の選択のみで、パスワード認証はありません
-- 他ユーザーのデータへの書き込みはサーバー側で防止していますが、読み取りは制限していません
-- **インターネットに公開する場合は、Cloudflare Access 等による IP 制限・アクセス制御を別途設けることを強く推奨します**
-
----
-
-## 🗄 Data Structure (Models)
-
-### 0. User (Animal Login)
+### User (Animal Login)
 
 <img src="src/animals.png" width="500" alt="menu-pic">
 
 - **役割**: アプリを利用する個人（新人・メンター）の識別。
 - **項目**: `emoji` (🦁や🐰などのユニークな絵文字)。
 
-### 1. Menu (Curriculum)
+### Menu (Curriculum)
 
 <img src="src/menu.png" width="500" alt="menu-pic">
 
@@ -42,21 +71,21 @@
 - **項目**: 名称、目安日数、概要、参考URL。
 - ※ `internal/database/menu_config.json` をマスターとして起動時に自動同期します。
 
-### 2. Plan (Training Plan)
+### Plan (Training Plan)
 
 <img src="src/plan.png" width="500" alt="plan-pic">
 
 - **役割**: 各メニューに対する具体的な学習計画。
 - **項目**: `content` (自由記述のテキスト)、`user_id`。
 
-### 3. Report (Daily Log)
+### Report (Daily Log)
 
 <img src="src/daily.png" width="500" alt="daily-pic">
 
 - **役割**: 日付単位の事実と内省の記録。
 - **項目**: `date` (YYYY-MM-DD)、`content` (日報内容)、`user_id`。
 
-### 4. Progress (Status & Condition)
+### Progress (Status & Condition)
 
 <img src="src/overview.png" width="500" alt="overview-pic">
 
@@ -65,43 +94,69 @@
 
 ---
 
-## 🛠 Tech Stack
+## Architecture
 
-**Frontend**
-- Vue 3 (Composition API)
-- Vite / Vue Router
-- Axios, date-fns
-
-**Backend**
-- Go 1.25+
-- Gin (Web Framework)
-- GORM (ORM) / SQLite (Pure Go driver)
-- go:embed (フロントエンド資産をバイナリに内包)
+```mermaid
+graph TD
+    User[一般アニマルユーザー] -->|スケジュール・日報入力| BE(Go API Server)
+    Admin[管理者] -->|メニュー編集| BE
+    BE -->|データの永続化| DB[(SQLite: database.db)]
+    BE -->|メニュー更新時に保存/同期| JSON[menu_config.json]
+    
+    subgraph Background Process (Demo Mode)
+        Monitor[30分周期 差分監視スレッド] -->|変更を検知した場合| Reset[DB初期化 & 再投入]
+    end
+```
 
 ---
 
-## 📦 Setup & Installation
+## Tech Stack
 
-### Prerequisites
+| Layer | Technology | Reason |
+|---|---|---|
+| **Frontend** | Vue 3, Vite, Vue Router | リアクティブなUI構築と、シングルページアプリケーション（SPA）のルーティングをシンプルに統合するため。 |
+| **Backend** | Go (Gin), GORM | 高パフォーマンスかつ静的なGoの型安全性を活かし、Web APIを軽量かつ高速に提供するため。 |
+| **Database** | SQLite (Pure Go driver) | 外部データベースサーバーの設定や運用管理コストをゼロにし、単一ファイルのみで動作を完結させるため。 |
+| **Embedding** | go:embed | フロントエンドのビルド資産（HTML/JS/CSS）をGoのバイナリ自体に埋め込み、単一バイナリだけで配布・起動できるようにするため。 |
 
-- Go 1.25+
-- Node.js 20+
+---
 
-### Build & Run Single Binary
+## Design Decisions
 
-フロントエンドのビルド → Go バイナリへの embed → 起動を一連で行います。
+- **アニマルログイン（ゆるやかな識別）**: 
+  パスワードによる厳格な認証をあえて排し、動物の絵文字を選ぶだけのカジュアルなアカウント管理を採用しています。これはチーム内の信頼関係を前提に、誰がどの作業をしているかを気楽に共有するための設計です。
+- **SQLite + JSONのハイブリッド同期**:
+  管理画面からの編集はSQLiteへ直接書き込まれますが、開発環境やデプロイ時の整合性を担保するため、同時に `menu_config.json` にも書き出されます。これにより、メニュー設定がGit管理可能になります。
+- **デモモードでの動的日付 Seeder**:
+  デモ起動時に日付を `現在日時 - 3日` などと相対計算し、日報や進捗が常に「直近数日間」のものとしてリアルに再現されるように設計しています。
 
-```bash
-# ビルド（frontend + backend を単一バイナリに）
-make build
+---
 
-# 起動
-./backend/training-app
-```
+## Scope
 
-ブラウザで http://localhost:5000 にアクセス。
+### In Scope
+- 各自のアニマル（絵文字）による簡易ログイン
+- 研修カリキュラムに応じた学習計画（Plan）の作成と自己編集
+- 1日単位のシンプルな日報（Daily Log）入力
+- 新人の主観的なズレ（手応え 1〜5）とメモを共有するダッシュボード（Overview）
+- 管理者画面からの研修メニューのCRUD操作およびJSONファイルの自動保存
 
-### Development Mode
+### Out of Scope
+- パスワードを用いた一般ユーザー認証（アニマルログインのみ）
+- メンターや管理者による一般ユーザーデータの直接編集（読み取りのみ可）
+
+---
+
+## Deploy
+
+`main` ブランチへのプッシュにより、GitHub Actionsでテストおよび自動ビルドが行われ、本番サーバーへデプロイされます。フロントエンドの静的ファイルがGoバイナリに埋め込まれているため、生成された単一の実行ファイルをサーバーに配置して起動するだけでデプロイが完了します。
+
+---
+
+## Development
+
+### Local Run
+開発用にフロントエンドとバックエンドをそれぞれホットリロード有効で起動します。
 
 ```bash
 # 初回のみ: go:embed 用のスタブ作成
