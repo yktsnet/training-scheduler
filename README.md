@@ -49,7 +49,8 @@ DEMO_MODE=true ADMIN_PASSWORD=admin123 ./backend/training-app
 
 * **通常モード (実運用 / デモ無効時)**
   * **クリーン起動**: 自動リセットやダミーデータの自動投入は行われません。アクセス時はアニマル選択画面から始まり、各自がアニマルを新規作成して研修を開始します。
-  * **起動方法とパスワード設定**:
+  * **起動方法と環境設定**:
+    起動コマンドの引数として直接渡すか、実運用環境で永続化する場合は `systemd` のサービスファイル内の `Environment` 定義や、コンテナの環境変数設定ファイルなどで指定します。
     ```bash
     # 管理者パスワードを設定し、通常モードで起動
     ADMIN_PASSWORD=your_secure_password ./backend/training-app
