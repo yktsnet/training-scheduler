@@ -2,7 +2,7 @@
 id: 01
 skill: pr-workflow
 branch-slug: repo-hygiene
-github_issue:
+github_issue: 1
 status: open
 type: cleanup
 対象: context/conventions.md, context/structure.md, .gitignore
