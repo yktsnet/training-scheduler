@@ -45,6 +45,14 @@ func GetMenuConfigPath() string {
 	return "internal/database/menu_config.json"
 }
 
+// GetDatabasePath はプロジェクトルート実行かbackendディレクトリ実行かに応じてdatabase.dbのパスを動的に解決します
+func GetDatabasePath() string {
+	if _, err := os.Stat("backend/internal/database/menu_config.json"); err == nil {
+		return "backend/instance/database.db"
+	}
+	return "instance/database.db"
+}
+
 // SeedMenus は外部JSONファイルを優先し、なければ埋め込みデータを使用してDBを同期します
 func SeedMenus(db *gorm.DB) error {
 	var menuItems []models.Menu

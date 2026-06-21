@@ -134,7 +134,15 @@ const fetchUsers = async () => {
     const savedId = localStorage.getItem('active_animal_id');
     if (savedId) {
       const found = users.value.find(u => u.id === parseInt(savedId));
-      if (found) await login(found);
+      if (found) {
+        await login(found);
+        return;
+      }
+    }
+
+    // すでにDBに登録済みアニマルがある場合（デモモード時のダミー🐶等）は最初のユーザーで自動ログイン
+    if (users.value.length > 0) {
+      await login(users.value[0]);
     }
   } catch (e) {
     console.error(e);

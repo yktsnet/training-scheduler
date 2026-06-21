@@ -98,12 +98,10 @@ DEMO_MODE=true ADMIN_PASSWORD=admin123 ./backend/training-app
 
 ```mermaid
 graph TD
-    %% 1. 最上部 (TOP) に関係者を配置
-    subgraph Users ["関係者 (最上部)"]
-        Admin["管理者"]
-        Newcomer["新人 (アニマルログイン)"]
-        Mentor["メンター (見守り手)"]
-    end
+    %% 1. 関係者を配置
+    Admin["管理者"]
+    Newcomer["新人 (アニマルログイン)"]
+    Mentor["メンター (見守り手)"]
 
     %% 2. 下部のデータライフサイクル (左から右への直感的な流れ)
     Menu["① 研修メニュー <br>(共通カリキュラム)"] -->|選択して計画化| Plan["② 個人の計画 <br>(自由記述の目標)"]

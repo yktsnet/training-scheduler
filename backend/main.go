@@ -25,7 +25,7 @@ var frontendFS embed.FS
 
 func main() {
 	// 1. データベース接続 (SQLite)
-	db, err := gorm.Open(sqlite.Open("instance/database.db"), &gorm.Config{})
+	db, err := gorm.Open(sqlite.Open(database.GetDatabasePath()), &gorm.Config{})
 	if err != nil {
 		log.Fatalf("failed to connect database: %v", err)
 	}
