@@ -103,7 +103,7 @@ graph TD
     BE -->|データの永続化| DB[(SQLite: database.db)]
     BE -->|メニュー更新時に保存/同期| JSON[menu_config.json]
     
-    subgraph Background Process (Demo Mode)
+    subgraph bg["Background Process (Demo Mode)"]
         Monitor[30分周期 差分監視スレッド] -->|変更を検知した場合| Reset[DB初期化 & 再投入]
     end
 ```
