@@ -98,14 +98,27 @@ DEMO_MODE=true ADMIN_PASSWORD=admin123 ./backend/training-app
 
 ```mermaid
 graph TD
-    User[一般アニマルユーザー] -->|スケジュール・日報入力| BE(Go API Server)
-    Admin[管理者] -->|メニュー編集| BE
-    BE -->|データの永続化| DB[(SQLite: database.db)]
-    BE -->|メニュー更新時に保存/同期| JSON[menu_config.json]
-    
-    subgraph bg["Background Process (Demo Mode)"]
-        Monitor[30分周期 差分監視スレッド] -->|変更を検知した場合| Reset[DB初期化 & 再投入]
+    %% 1. 最上部 (TOP) に関係者を配置
+    subgraph Users ["関係者 (最上部)"]
+        Admin["管理者"]
+        Newcomer["新人 (アニマルログイン)"]
+        Mentor["メンター (見守り手)"]
     end
+
+    %% 2. 下部のデータライフサイクル (左から右への直感的な流れ)
+    Menu["① 研修メニュー <br>(共通カリキュラム)"] -->|選択して計画化| Plan["② 個人の計画 <br>(自由記述の目標)"]
+    Plan -->|日々の実行と振り返り| Report["③ 日報 <br>(事実と内省の記録)"]
+    Report -->|主観による自己評価| Progress["④ 手応え・ズレ <br>(1〜5 の自己評価)"]
+    Progress -->|進捗の自動集約| Dashboard["全体ダッシュボード <br>(Overview)"]
+
+    %% 3. 関係者からデータフローへのアプローチ (上から下への矢印)
+    Admin -->|カリキュラムの登録/編集| Menu
+    
+    Newcomer -->|目標を記入| Plan
+    Newcomer -->|日々の出来事を記入| Report
+    Newcomer -->|手応えを評価| Progress
+    
+    Mentor -->|ダッシュボードで状況を俯瞰| Dashboard
 ```
 
 ---
