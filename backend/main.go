@@ -65,7 +65,7 @@ func main() {
 	}
 
 	// 3. マスターデータの初期投入/同期 または デモモード初期化
-	isDemoMode := os.Getenv("DEMO_MODE") == "true"
+	isDemoMode := os.Getenv("DEMO_MODE") != "false"
 	if isDemoMode {
 		log.Println("Demo mode is ENABLED. Seeding demo data...")
 		if err := database.SeedDemoData(db); err != nil {
