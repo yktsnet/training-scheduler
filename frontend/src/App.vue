@@ -307,7 +307,7 @@ watch(() => route.path, checkRoadmapStatus);
   background: #fff; padding: 3rem; border-radius: 20px;
   max-width: 600px; width: 90%; text-align: center;
   box-shadow: 0 20px 40px rgba(0,0,0,0.2);
-  margin: auto;
+  margin: 2rem auto;
 }
 
 .animal-grid {
@@ -397,6 +397,7 @@ watch(() => route.path, checkRoadmapStatus);
   .animal-modal {
     padding: 1.5rem;
     border-radius: 16px;
+    margin: 1rem auto;
   }
   .animal-grid {
     margin: 1rem 0;
