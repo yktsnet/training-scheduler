@@ -102,21 +102,23 @@ DEMO_MODE=true ADMIN_PASSWORD=admin123 ./backend/training-app
 
 ```mermaid
 graph TD
-    %% 1. 関係者を配置
-    Admin["管理者"]
-    Newcomer["新人 (アニマルログイン)"]
-    Mentor["メンター (見守り手)"]
+    %% 1. 関係者を最上部にまとめて配置 (肩書きなしのグループ枠)
+    subgraph Roles [" "]
+        Admin["管理者"]
+        Newcomer["新人 (アニマルログイン)"]
+        Mentor["メンター (見守り手)"]
+    end
 
     %% 2. 下部のデータライフサイクル (左から右への直感的な流れ)
-    Menu["① 研修メニュー <br>(共通カリキュラム)"] -->|選択して計画化| Plan["② 個人の計画 <br>(自由記述の目標)"]
-    Plan -->|日々の実行と振り返り| Report["③ 日報 <br>(事実と内省の記録)"]
-    Report -->|主観による自己評価| Progress["④ 手応え・ズレ <br>(1〜5 の自己評価)"]
-    Progress -->|進捗の自動集約| Dashboard["全体ダッシュボード <br>(Overview)"]
+    Menu["研修メニュー <br>(共通カリキュラム)"] --> Plan["① 個人の計画 <br>(自由記述の目標)"]
+    Plan -->|日々の実行と振り返り| Report["② 日報 <br>(事実と内省の記録)"]
+    Report -->|主観による自己評価| Progress["③ 手応え・ズレ <br>(1〜5 の自己評価)"]
+    Progress -->|進捗の自動集約| Dashboard["④ 全体ダッシュボード <br>(Overview)"]
 
     %% 3. 関係者からデータフローへのアプローチ (上から下への矢印)
     Admin -->|カリキュラムの登録/編集| Menu
     
-    Newcomer -->|目標を記入| Plan
+    Newcomer -->|研修項目を選択して計画化| Plan
     Newcomer -->|日々の出来事を記入| Report
     Newcomer -->|手応えを評価| Progress
     
