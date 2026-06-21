@@ -187,13 +187,27 @@ func HasDemoDrift(db *gorm.DB) bool {
 	var planCount int64
 	var reportCount int64
 	var progressCount int64
+	var menuCount int64
 
 	db.Model(&models.User{}).Count(&userCount)
 	db.Model(&models.Plan{}).Count(&planCount)
 	db.Model(&models.Report{}).Count(&reportCount)
 	db.Model(&models.Progress{}).Count(&progressCount)
+	db.Model(&models.Menu{}).Count(&menuCount)
 
-	if userCount != 1 || planCount != 1 || reportCount != 2 || progressCount != 1 {
+	// menu_config.json (または埋め込みデータ) の期待メニュー件数を算出
+	var menuItems []models.Menu
+	var data []byte
+	externalPath := GetMenuConfigPath()
+	if externalData, err := os.ReadFile(externalPath); err == nil {
+		data = externalData
+	} else {
+		data = menuConfigJSON
+	}
+	_ = json.Unmarshal(data, &menuItems)
+	expectedMenuCount := int64(len(menuItems))
+
+	if userCount != 1 || planCount != 1 || reportCount != 2 || progressCount != 1 || menuCount != expectedMenuCount {
 		return true
 	}
 
