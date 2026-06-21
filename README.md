@@ -39,18 +39,22 @@ DEMO_MODE=true ADMIN_PASSWORD=admin123 ./backend/training-app
 - **ゆるやかな識別（アニマル・ログイン）**: パスワード等による厳格な認証ではなく、動物の絵文字を選ぶだけのシンプルなログインを採用。チーム内の信頼関係を前提とした、遊び心のあるアカウント管理です。
 
 ### Demo Mode & Admin Panel
-本番やデモ用にURLを一般公開する際の安全性を担保するため、以下の機能が備わっています。
 
-- **管理者機能 (Admin Panel)**:
-  - アニマル選択画面の最下部「🐾 管理者としてログイン」から、管理者用パスワードでログインできます。
-  - カリキュラム（メニュー）の追加・編集・削除をブラウザ上で動的に行えます。変更はDBと `menu_config.json` に即座に同期されます。
-- **デモモード (Demo Mode)**:
-  - 環境変数 `DEMO_MODE=true` で起動すると有効化されます。
-  - 30分ごとにDBの変更差分を検知し、データが書き換えられている場合に初期ダミーデータ（🐶 ユーザー、Git計画、2日分の日報、進捗）へ自動リセットします。
-- **デモモードの停止方法**:
-  - 起動時に環境変数 `DEMO_MODE` を指定しない、または `DEMO_MODE=false` を設定することで、30分自動リセット機能を無効化できます（通常の本番運用では無効にしてください）。
-- **パスワードの変更方法**:
-  - 起動時に環境変数 `ADMIN_PASSWORD=新しいパスワード` を指定します。未指定の場合はデフォルト値の `admin123` が使用されます。
+本アプリにはデモ用の「デモモード」と、実運用のための「通常モード」が備わっています。
+
+* **デモモード (`DEMO_MODE=true` で起動)**
+  * **データ自動リセット**: デモ公開時の改ざんを防ぐため、30分ごとにDBを初期ダミーデータ（🐶 ユーザー、計画、日報、進捗）へ自動復元します。
+  * **自動ログイン**: 初回アクセス時のアニマル選択をバイパスし、即座にダミー（🐶）として機能を体験できます。
+  * **管理者ログイン**: 管理者画面からカリキュラムを編集できます（デフォルトパスワード: `admin123`）。
+
+* **通常モード (実運用 / デモ無効時)**
+  * **クリーン起動**: 自動リセットやダミーデータの自動投入は行われません。アクセス時はアニマル選択画面から始まり、各自がアニマルを新規作成して研修を開始します。
+  * **起動方法とパスワード設定**:
+    ```bash
+    # 管理者パスワードを設定し、通常モードで起動
+    ADMIN_PASSWORD=your_secure_password ./backend/training-app
+    ```
+    ※ セキュリティのため、実運用時はデフォルトパスワードのままにせず独自のパスワードを設定してください。
 
 ---
 
@@ -160,7 +164,7 @@ graph TD
 
 ## Deploy
 
-`main` ブランチへのプッシュにより、GitHub Actionsでテストおよび自動ビルドが行われ、本番サーバーへデプロイされます。フロントエンドの静的ファイルがGoバイナリに埋め込まれているため、生成された単一の実行ファイルをサーバーに配置して起動するだけでデプロイが完了します。
+`main` ブランチへのプッシュにより、GitHub Actionsでテストおよび自動ビルドが行われ、デプロイ先サーバーへ自動デプロイされます。フロントエンドの静的ファイルがGoバイナリに埋め込まれているため、生成された単一の実行ファイルをサーバーに配置して起動するだけでデプロイが完了します。
 
 ---
 
@@ -187,86 +191,5 @@ make test
 ```
 
 外部依存なし（in-memory SQLite）。Go の標準ライブラリのみで動作します。
-
----
-
-## 🚀 CI/CD
-
-### CI (Continuous Integration)
-
-`main` / `go-dev` への push および pull request 時に GitHub Actions で自動実行されます。
-
-1. Go テスト (`go test ./internal/...`)
-2. フロントエンドビルド + Go バイナリビルドの疎通確認
-
-### CD (Continuous Deployment)
-
-`main` ブランチへのプッシュ時に、Tailscale VPN 経由で対象サーバーへ自動デプロイします。
-
-#### デプロイ設計と技術選定の判断基準 (Tailscale経由プッシュ型自動デプロイ)
-
-本プロジェクトのデプロイは、クラウド上の CI サービス（GitHub Actions）から実環境へ直接リリースを行う **「プッシュ（Push）型自動デプロイ方式」** を採用しています。
-
-* **構成の前提**: テスト・ビルド・デプロイの一連を GitHub Actions 上で完結させ、ビルドログと成否を GitHub に一元管理します。
-* **VPN（Tailscale）を用いたセキュアな一時接続**:
-  オンプレミス環境やプライベートネットワーク内のサーバーに対してデプロイを行う際、インターネット上に SSH ポート（22）を直接開放することはセキュリティ上の大きな脅威となります。本システムでは、デプロイ実行時のみ GitHub Actions ランナーから一時的に Tailscale（閉域網 VPN）へ接続させ、認証されたセキュアな経路を通じてのみ SSH デプロイを行うことで、高い開発効率とインフラセキュリティを両立しています。
-* **物理サーバーのビルド負荷軽減**:
-  Go のビルドや Node.js のビルド処理はすべて GitHub Actions（クラウド環境）側で行われ、最適化された単一バイナリのみがサーバーに転送されます。デプロイ時のオンプレミスサーバーの CPU やメモリ負荷をほぼゼロに抑え、本番稼働中のサービスへの影響を最小限に抑えています。
-
-#### Initial Setup
-
-**1. GitHub Secrets の登録**
-
-リポジトリの `Settings > Secrets and variables > Actions` に以下を登録：
-
-| Secret 名 | 内容 |
-|---|---|
-| `DEPLOY_HOST` | デプロイ先サーバーのホスト名または IP |
-| `DEPLOY_USER` | デプロイ用 SSH ログインユーザー名 |
-| `SSH_PRIVATE_KEY` | SSH 秘密鍵（`~/.ssh/id_ed25519` 等の中身） |
-| `TS_OAUTH_CLIENT_ID` | Tailscale OAuth Client ID |
-| `TS_OAUTH_SECRET` | Tailscale OAuth Client Secret |
-
-**2. デプロイ先サーバー側の sudoers 設定**
-
-デプロイユーザーがサービス再起動やバイナリの配置をパスワードなしで実行できるよう設定します。
-
-```bash
-sudo visudo -f /etc/sudoers.d/training-scheduler
-```
-
-以下を追記します（ユーザー名や配置パスは環境に合わせて調整してください）：
-
-```
-YOUR_USER ALL=(ALL) NOPASSWD: \
-  /usr/bin/systemctl restart training-scheduler, \
-  /usr/bin/mv /tmp/training-app /opt/training-scheduler/training-app, \
-  /usr/bin/chmod +x /opt/training-scheduler/training-app
-```
-
-**3. systemd サービスファイルの配置（未設置の場合）**
-
-```ini
-# /etc/systemd/system/training-scheduler.service
-[Unit]
-Description=Training Scheduler App
-After=network.target
-
-[Service]
-Type=simple
-User=YOUR_USER
-WorkingDirectory=/opt/training-scheduler
-ExecStart=/opt/training-scheduler/training-app
-Restart=always
-MemoryMax=150M
-
-[Install]
-WantedBy=multi-user.target
-```
-
-```bash
-sudo systemctl daemon-reload
-sudo systemctl enable training-scheduler
-```
 
 
