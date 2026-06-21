@@ -11,6 +11,7 @@
           <button v-for="u in users" :key="u.id" @click="login(u)" 
                   class="animal-btn" :class="{ active: activeAnimal?.id === u.id }">
             {{ u.emoji }}
+            <span v-if="u.initial" class="animal-initial">{{ u.initial }}</span>
           </button>
           
           <div class="divider"></div>
@@ -42,7 +43,7 @@
     <template v-else-if="activeAnimal && !showAnimalModal">
       <header class="main-header">
         <h1 class="brand">Training Scheduler 📅</h1>
-        <div class="current-animal">Playing as: {{ activeAnimal.emoji }}</div>
+        <div class="current-animal">Playing as: {{ activeAnimal.emoji }} <span v-if="activeAnimal.initial">({{ activeAnimal.initial }})</span></div>
         
         <nav class="tab-nav">
           <router-link to="/" class="nav-item">
@@ -158,12 +159,26 @@ const login = async (user) => {
 };
 
 const createUser = async (emoji) => {
+  const initialInput = prompt("あなたのイニシャルを入力してください（英大文字1〜3文字、例: YT）:");
+  if (initialInput === null) return; // キャンセルされた場合
+  
+  const initial = initialInput.trim().toUpperCase();
+  if (initial.length < 1 || initial.length > 3) {
+    alert("イニシャルは1〜3文字で入力してください。");
+    return;
+  }
+
   try {
-    const res = await axios.post('/api/users', { emoji });
+    const res = await axios.post('/api/users', { emoji, initial });
     await fetchUsers();
     login(res.data);
   } catch (e) {
     console.error(e);
+    if (e.response && e.response.data && e.response.data.error) {
+      alert(`登録エラー: ${e.response.data.error}`);
+    } else {
+      alert("登録に失敗しました。");
+    }
   }
 };
 
@@ -315,8 +330,30 @@ watch(() => route.path, checkRoadmapStatus);
 }
 
 .animal-btn {
-  font-size: 2rem; padding: 10px; border: 2px solid transparent;
+  font-size: 2rem; border: 2px solid transparent;
   background: #f1f5f9; border-radius: 12px; cursor: pointer; transition: 0.2s;
+  position: relative;
+  width: 64px;
+  height: 64px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+}
+
+.animal-initial {
+  position: absolute;
+  bottom: -4px;
+  right: -4px;
+  background: var(--primary, #4f46e5);
+  color: white;
+  font-size: 0.65rem;
+  font-weight: 800;
+  padding: 2px 5px;
+  border-radius: 8px;
+  border: 2px solid white;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
+  line-height: 1;
 }
 
 .animal-btn:hover { background: #e2e8f0; transform: translateY(-2px); }
@@ -405,7 +442,16 @@ watch(() => route.path, checkRoadmapStatus);
   }
   .animal-btn {
     font-size: 1.6rem;
-    padding: 8px;
+    width: 52px;
+    height: 52px;
+    padding: 0;
+  }
+  .animal-initial {
+    font-size: 0.55rem;
+    padding: 1px 3px;
+    border-width: 1.5px;
+    bottom: -3px;
+    right: -3px;
   }
 }
 </style>

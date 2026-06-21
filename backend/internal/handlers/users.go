@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"net/http"
+	"strings"
 	"training-scheduler/internal/models"
 
 	"github.com/gin-gonic/gin"
@@ -25,10 +26,18 @@ func (h *UsersHandler) GetUsers(c *gin.Context) {
 // POST /api/users (新しいアニマルでログイン/登録)
 func (h *UsersHandler) CreateUser(c *gin.Context) {
 	var req struct {
-		Emoji string `json:"emoji" binding:"required"`
+		Emoji   string `json:"emoji" binding:"required"`
+		Initial string `json:"initial"`
 	}
 	if err := c.ShouldBindJSON(&req); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Emoji is required"})
+		return
+	}
+
+	initial := strings.TrimSpace(req.Initial)
+	initial = strings.ToUpper(initial)
+	if len(initial) == 0 || len(initial) > 3 {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Initial must be between 1 and 3 characters"})
 		return
 	}
 
@@ -39,7 +48,10 @@ func (h *UsersHandler) CreateUser(c *gin.Context) {
 		return
 	}
 
-	newUser := models.User{Emoji: req.Emoji}
+	newUser := models.User{
+		Emoji:   req.Emoji,
+		Initial: initial,
+	}
 	if err := h.DB.Create(&newUser).Error; err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return

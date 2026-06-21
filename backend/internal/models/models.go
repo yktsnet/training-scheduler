@@ -2,8 +2,9 @@ package models
 
 // User (アニマルユーザー)
 type User struct {
-	ID    uint   `gorm:"primaryKey" json:"id"`
-	Emoji string `gorm:"type:varchar(10);unique;not null" json:"emoji"`
+	ID      uint   `gorm:"primaryKey" json:"id"`
+	Emoji   string `gorm:"type:varchar(10);unique;not null" json:"emoji"`
+	Initial string `gorm:"type:varchar(10);not null;default:''" json:"initial"`
 }
 
 // Menu (研修メニュー)

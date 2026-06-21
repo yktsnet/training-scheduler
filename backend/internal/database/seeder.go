@@ -121,7 +121,7 @@ func SeedDemoData(db *gorm.DB) error {
 	}
 
 	// デモユーザー (🐶) の作成
-	demoUser := models.User{ID: 1, Emoji: "🐶"}
+	demoUser := models.User{ID: 1, Emoji: "🐶", Initial: "DM"}
 	if err := db.Create(&demoUser).Error; err != nil {
 		return err
 	}
@@ -212,7 +212,7 @@ func HasDemoDrift(db *gorm.DB) bool {
 	}
 
 	var user models.User
-	if err := db.Limit(1).Find(&user).Error; err != nil || user.ID == 0 || user.Emoji != "🐶" {
+	if err := db.Limit(1).Find(&user).Error; err != nil || user.ID == 0 || user.Emoji != "🐶" || user.Initial != "DM" {
 		return true
 	}
 

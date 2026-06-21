@@ -38,7 +38,7 @@ func TestCreateUser_Success(t *testing.T) {
 	router := gin.New()
 	router.POST("/api/users", h.CreateUser)
 
-	body := `{"emoji": "🦁"}`
+	body := `{"emoji": "🦁", "initial": "yt"}`
 	w := httptest.NewRecorder()
 	req := httptest.NewRequest(http.MethodPost, "/api/users", bytes.NewBufferString(body))
 	req.Header.Set("Content-Type", "application/json")
@@ -52,6 +52,9 @@ func TestCreateUser_Success(t *testing.T) {
 	if result.Emoji != "🦁" {
 		t.Errorf("expected emoji 🦁, got %s", result.Emoji)
 	}
+	if result.Initial != "YT" {
+		t.Errorf("expected initial YT (uppercased), got %s", result.Initial)
+	}
 	if result.ID == 0 {
 		t.Error("expected non-zero ID")
 	}
@@ -63,7 +66,7 @@ func TestCreateUser_DuplicateEmoji(t *testing.T) {
 	router := gin.New()
 	router.POST("/api/users", h.CreateUser)
 
-	body := `{"emoji": "🐰"}`
+	body := `{"emoji": "🐰", "initial": "BB"}`
 
 	// 1回目: 成功
 	w := httptest.NewRecorder()
@@ -81,6 +84,52 @@ func TestCreateUser_DuplicateEmoji(t *testing.T) {
 	router.ServeHTTP(w, req)
 	if w.Code != http.StatusBadRequest {
 		t.Errorf("expected 400 for duplicate, got %d", w.Code)
+	}
+}
+
+func TestCreateUser_InitialValidation(t *testing.T) {
+	db := setupTestDB(t)
+	h := &UsersHandler{DB: db}
+	router := gin.New()
+	router.POST("/api/users", h.CreateUser)
+
+	tests := []struct {
+		name       string
+		body       string
+		expectedCode int
+	}{
+		{
+			name:       "empty initial",
+			body:       `{"emoji": "🦊", "initial": ""}`,
+			expectedCode: http.StatusBadRequest,
+		},
+		{
+			name:       "too long initial",
+			body:       `{"emoji": "🦊", "initial": "ABCD"}`,
+			expectedCode: http.StatusBadRequest,
+		},
+		{
+			name:       "whitespace initial",
+			body:       `{"emoji": "🦊", "initial": "   "}`,
+			expectedCode: http.StatusBadRequest,
+		},
+		{
+			name:       "valid 3 chars",
+			body:       `{"emoji": "🦊", "initial": "abc"}`,
+			expectedCode: http.StatusOK,
+		},
+	}
+
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			w := httptest.NewRecorder()
+			req := httptest.NewRequest(http.MethodPost, "/api/users", bytes.NewBufferString(tc.body))
+			req.Header.Set("Content-Type", "application/json")
+			router.ServeHTTP(w, req)
+			if w.Code != tc.expectedCode {
+				t.Errorf("expected %d, got %d: %s", tc.expectedCode, w.Code, w.Body.String())
+			}
+		})
 	}
 }
 
