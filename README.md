@@ -11,18 +11,20 @@
 
 ## Quick Start
 
-### Prerequisites
-- [Go 1.25+](https://go.dev/)
-- [Node.js 20+](https://nodejs.org/)
-
-### Setup
-リポジトリをクローンしてビルドを実行し、Webサーバーを起動します。
+### Docker（推奨）
 
 ```bash
-# プロジェクトのビルド（フロントエンドのビルドとGoへの埋め込みを一括実行）
-make build
+docker compose up --build
+```
 
-# デモモード（30分ごとの自動リセット有効）かつ初期パスワードを指定して起動
+http://localhost:5000 でアクセスできます。SQLite データは named volume `db-data` に永続化されます。
+
+### ネイティブビルド
+
+**Prerequisites**: [Go 1.25+](https://go.dev/), [Node.js 20+](https://nodejs.org/)
+
+```bash
+make build
 DEMO_MODE=true ADMIN_PASSWORD=admin123 ./backend/training-app
 ```
 
@@ -138,6 +140,7 @@ graph TD
 | **Backend** | Go (Gin), GORM | 高パフォーマンスかつ静的なGoの型安全性を活かし、Web APIを軽量かつ高速に提供するため。 |
 | **Database** | SQLite (Pure Go driver) | 外部データベースサーバーの設定や運用管理コストをゼロにし、単一ファイルのみで動作を完結させるため。 |
 | **Embedding** | go:embed | フロントエンドのビルド資産（HTML/JS/CSS）をGoのバイナリ自体に埋め込み、単一バイナリだけで配布・起動できるようにするため。 |
+| **Container** | Docker, Docker Compose | マルチステージビルドで軽量な本番イメージを生成し、`docker compose up` だけで起動できるようにするため。 |
 
 ---
 

@@ -4,6 +4,7 @@
 
 ## コマンド
 
+- Docker 起動: `docker compose up --build`（:5000、SQLite は named volume に永続化）
 - ビルド（frontend embed 込み単一バイナリ）: `make build`
 - テスト: `make test`（in-memory SQLite、外部依存なし）
 - 開発: `make dev-dist`（初回スタブ）→ `make dev-back`（:5000）/ `make dev-front`（:5173 HMR）

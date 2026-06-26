@@ -11,18 +11,20 @@ A training support tool designed to foster the autonomy of new employees. By ble
 
 ## Quick Start
 
-### Prerequisites
-- [Go 1.25+](https://go.dev/)
-- [Node.js 20+](https://nodejs.org/)
-
-### Setup
-Clone the repository, build it, and start the web server.
+### Docker (Recommended)
 
 ```bash
-# Build the project (runs frontend build and Go embedding in one step)
-make build
+docker compose up --build
+```
 
-# Start in demo mode (auto-reset every 30 minutes) with initial password
+Access at http://localhost:5000. SQLite data is persisted in the `db-data` named volume.
+
+### Native Build
+
+**Prerequisites**: [Go 1.25+](https://go.dev/), [Node.js 20+](https://nodejs.org/)
+
+```bash
+make build
 DEMO_MODE=true ADMIN_PASSWORD=admin123 ./backend/training-app
 ```
 
@@ -138,6 +140,7 @@ graph TD
 | **Backend** | Go (Gin), GORM | To leverage Go's high performance and static type safety, providing Web APIs lightly and quickly. |
 | **Database** | SQLite (Pure Go driver) | To eliminate external database server setup and operational costs, completing all operations with a single file. |
 | **Embedding** | go:embed | To embed frontend build assets (HTML/JS/CSS) directly into the Go binary, enabling distribution and launch with just a single binary. |
+| **Container** | Docker, Docker Compose | Multi-stage build produces a lightweight production image, launchable with just `docker compose up`. |
 
 ---
 
