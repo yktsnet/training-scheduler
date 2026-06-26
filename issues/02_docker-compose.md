@@ -3,7 +3,7 @@ id: 02
 skill: pr-workflow
 branch-slug: docker-compose
 github_issue: 3
-status: open
+status: close
 type: feat
 対象: Dockerfile (新規), compose.yaml (新規), .dockerignore (新規)
 内容: マルチステージ Dockerfile と compose.yaml を追加し、`docker compose up` で本番相当のシングルバイナリが起動できるようにする。
