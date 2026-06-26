@@ -2,7 +2,7 @@
 id: 02
 skill: pr-workflow
 branch-slug: docker-compose
-github_issue:
+github_issue: 3
 status: open
 type: feat
 対象: Dockerfile (新規), compose.yaml (新規), .dockerignore (新規)
