@@ -1,0 +1,8 @@
+node_modules/
+backend/dist/
+backend/training-app
+instance/
+.git/
+issues/
+context/
+src/

@@ -45,8 +45,12 @@ func GetMenuConfigPath() string {
 	return "internal/database/menu_config.json"
 }
 
-// GetDatabasePath はプロジェクトルート実行かbackendディレクトリ実行かに応じてdatabase.dbのパスを動的に解決します
+// GetDatabasePath はDBパスを解決します。
+// 優先順位: 環境変数 DB_PATH > プロジェクトルート実行 > backendディレクトリ実行
 func GetDatabasePath() string {
+	if path := os.Getenv("DB_PATH"); path != "" {
+		return path
+	}
 	if _, err := os.Stat("backend/internal/database/menu_config.json"); err == nil {
 		return "backend/instance/database.db"
 	}
