@@ -81,6 +81,32 @@ func TestAdminLogin_Failure(t *testing.T) {
 	}
 }
 
+func TestAdminLogin_DefaultPasswordWhenEnvUnset(t *testing.T) {
+	db := setupTestDB(t)
+	h := &AdminHandler{DB: db}
+
+	router := gin.New()
+	router.POST("/api/admin/login", h.Login)
+
+	origPassword, hadPassword := os.LookupEnv("ADMIN_PASSWORD")
+	os.Unsetenv("ADMIN_PASSWORD")
+	defer func() {
+		if hadPassword {
+			os.Setenv("ADMIN_PASSWORD", origPassword)
+		}
+	}()
+
+	body := `{"password": "admin123"}`
+	w := httptest.NewRecorder()
+	req := httptest.NewRequest(http.MethodPost, "/api/admin/login", bytes.NewBufferString(body))
+	req.Header.Set("Content-Type", "application/json")
+	router.ServeHTTP(w, req)
+
+	if w.Code != http.StatusOK {
+		t.Errorf("expected 200 with default password when ADMIN_PASSWORD unset, got %d: %s", w.Code, w.Body.String())
+	}
+}
+
 func TestAdminAuthMiddleware(t *testing.T) {
 	router := gin.New()
 	router.Use(AdminAuthMiddleware())
