@@ -104,6 +104,7 @@
 - `AdminHandler.UpdateMenu` はメニューの name・days を更新する
 - `AdminHandler.DeleteMenu` はメニューを削除すると、そのメニューに紐づく Plan・Progress も連鎖して削除する
 - `AdminHandler.Login` は `ADMIN_PASSWORD` 環境変数が未設定の場合、デフォルトパスワード `admin123` でログインできる
+- `AdminHandler.CreateMenu` / `UpdateMenu` は days が 0 以下（0・負数）だと 400 を返し、DB を変更しない
 
 | 保証（要約） | 対応テスト |
 |---|---|
@@ -114,6 +115,8 @@
 | メニュー更新 | `TestAdminUpdateMenu_Success` |
 | メニュー削除の連鎖 | `TestAdminDeleteMenu_Success` |
 | 未設定時のデフォルトパスワード | `TestAdminLogin_DefaultPasswordWhenEnvUnset` |
+| 作成時のdaysバリデーション | `TestAdminCreateMenu_InvalidDays` |
+| 更新時のdaysバリデーション | `TestAdminUpdateMenu_InvalidDays` |
 
 *（区切り内に複数のハンドラメソッドとミドルウェアが混在するので、行ごとに主語を明示する）*
 
@@ -121,7 +124,7 @@
 
 以下は保証すべきと思われるが、対応するテストが無い。
 
-- `AdminHandler.CreateMenu` / `UpdateMenu` は不正な入力（days が 0 以下など）に対するバリデーションが実装されていない（テストを追加すると red になるため見送り。実装修正を `issues/03_admin-menu-days-validation.md` として起票済み）
+（現時点でなし）
 
 ## About
 

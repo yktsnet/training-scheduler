@@ -165,6 +165,33 @@ func TestAdminCreateMenu_Success(t *testing.T) {
 	}
 }
 
+func TestAdminCreateMenu_InvalidDays(t *testing.T) {
+	defer cleanupTestJSON(t)
+	db := setupTestDB(t)
+	h := &AdminHandler{DB: db}
+
+	router := gin.New()
+	router.POST("/api/admin/menus", h.CreateMenu)
+
+	for _, days := range []int{0, -1} {
+		body := fmt.Sprintf(`{"name": "不正メニュー", "days": %d, "description": "desc", "url": "https://example.com"}`, days)
+		w := httptest.NewRecorder()
+		req := httptest.NewRequest(http.MethodPost, "/api/admin/menus", bytes.NewBufferString(body))
+		req.Header.Set("Content-Type", "application/json")
+		router.ServeHTTP(w, req)
+
+		if w.Code != http.StatusBadRequest {
+			t.Errorf("days=%d: expected 400, got %d: %s", days, w.Code, w.Body.String())
+		}
+	}
+
+	var count int64
+	db.Model(&models.Menu{}).Where("name = ?", "不正メニュー").Count(&count)
+	if count != 0 {
+		t.Error("menu with invalid days should not be saved to DB")
+	}
+}
+
 func TestAdminUpdateMenu_Success(t *testing.T) {
 	defer cleanupTestJSON(t)
 	db := setupTestDB(t)
@@ -188,6 +215,32 @@ func TestAdminUpdateMenu_Success(t *testing.T) {
 	db.First(&updated, menu.ID)
 	if updated.Name != "Go基礎(改)" || updated.Days != 4 {
 		t.Errorf("menu was not updated correctly: %+v", updated)
+	}
+}
+
+func TestAdminUpdateMenu_InvalidDays(t *testing.T) {
+	defer cleanupTestJSON(t)
+	db := setupTestDB(t)
+	menu := createTestMenu(t, db, "Go基礎", 3)
+
+	h := &AdminHandler{DB: db}
+	router := gin.New()
+	router.PUT("/api/admin/menus/:id", h.UpdateMenu)
+
+	body := `{"name": "Go基礎(改)", "days": 0, "description": "Goの応用", "url": "https://example.com"}`
+	w := httptest.NewRecorder()
+	req := httptest.NewRequest(http.MethodPut, fmt.Sprintf("/api/admin/menus/%d", menu.ID), bytes.NewBufferString(body))
+	req.Header.Set("Content-Type", "application/json")
+	router.ServeHTTP(w, req)
+
+	if w.Code != http.StatusBadRequest {
+		t.Errorf("expected 400, got %d: %s", w.Code, w.Body.String())
+	}
+
+	var unchanged models.Menu
+	db.First(&unchanged, menu.ID)
+	if unchanged.Name != "Go基礎" || unchanged.Days != 3 {
+		t.Errorf("menu should not have been updated: %+v", unchanged)
 	}
 }
 

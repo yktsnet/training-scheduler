@@ -88,6 +88,11 @@ func (h *AdminHandler) CreateMenu(c *gin.Context) {
 		return
 	}
 
+	if menu.Days <= 0 {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "days must be a positive integer"})
+		return
+	}
+
 	// 新規登録のため ID をゼロ値にして自動採番させる
 	menu.ID = 0
 
@@ -119,6 +124,12 @@ func (h *AdminHandler) UpdateMenu(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request body"})
 		return
 	}
+
+	if req.Days <= 0 {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "days must be a positive integer"})
+		return
+	}
+
 	req.ID = uint(id)
 
 	var existing models.Menu
