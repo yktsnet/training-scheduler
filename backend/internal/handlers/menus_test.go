@@ -148,6 +148,32 @@ func TestSaveSelection_DeletesDeselectedPlans(t *testing.T) {
 	}
 }
 
+func TestSaveSelection_NonexistentMenuID_NoOp(t *testing.T) {
+	db := setupTestDB(t)
+	user := createTestUser(t, db, "🦫")
+
+	h := &MenusHandler{DB: db}
+	router := gin.New()
+	router.POST("/api/menus/select", h.SaveSelection)
+
+	body := `{"menu_ids": [9999]}`
+	w := httptest.NewRecorder()
+	req := httptest.NewRequest(http.MethodPost, "/api/menus/select", bytes.NewBufferString(body))
+	req.Header.Set("Content-Type", "application/json")
+	req.Header.Set("X-User-Id", fmt.Sprintf("%d", user.ID))
+	router.ServeHTTP(w, req)
+
+	if w.Code != http.StatusOK {
+		t.Errorf("expected 200 (no-op) for nonexistent menu_id, got %d: %s", w.Code, w.Body.String())
+	}
+
+	var count int64
+	db.Model(&models.Plan{}).Where("user_id = ?", user.ID).Count(&count)
+	if count != 0 {
+		t.Errorf("expected no plan created for nonexistent menu_id, got %d", count)
+	}
+}
+
 func TestSaveSelection_NoAuth_Returns401(t *testing.T) {
 	db := setupTestDB(t)
 	h := &MenusHandler{DB: db}

@@ -133,6 +133,38 @@ func TestCreateUser_InitialValidation(t *testing.T) {
 	}
 }
 
+func TestCreateUser_EmojiRequired(t *testing.T) {
+	db := setupTestDB(t)
+	h := &UsersHandler{DB: db}
+	router := gin.New()
+	router.POST("/api/users", h.CreateUser)
+
+	body := `{"initial": "yt"}`
+	w := httptest.NewRecorder()
+	req := httptest.NewRequest(http.MethodPost, "/api/users", bytes.NewBufferString(body))
+	req.Header.Set("Content-Type", "application/json")
+	router.ServeHTTP(w, req)
+
+	if w.Code != http.StatusBadRequest {
+		t.Errorf("expected 400 for missing emoji, got %d: %s", w.Code, w.Body.String())
+	}
+}
+
+func TestDeleteUser_NonexistentID_NoOp(t *testing.T) {
+	db := setupTestDB(t)
+	h := &UsersHandler{DB: db}
+	router := gin.New()
+	router.DELETE("/api/users/:id", h.DeleteUser)
+
+	w := httptest.NewRecorder()
+	req := httptest.NewRequest(http.MethodDelete, "/api/users/9999", nil)
+	router.ServeHTTP(w, req)
+
+	if w.Code != http.StatusOK {
+		t.Errorf("expected 200 (no-op) for nonexistent user, got %d: %s", w.Code, w.Body.String())
+	}
+}
+
 func TestDeleteUser_CascadesRelatedData(t *testing.T) {
 	db := setupTestDB(t)
 	user := createTestUser(t, db, "🐻")

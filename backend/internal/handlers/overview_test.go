@@ -44,6 +44,37 @@ func TestGetOverview_FallsBackToMenuDays(t *testing.T) {
 	}
 }
 
+func TestGetOverview_UsesProgressTargetDaysWhenPresent(t *testing.T) {
+	db := setupTestDB(t)
+	user := createTestUser(t, db, "🦔")
+	menu := createTestMenu(t, db, "React入門", 7)
+	db.Create(&models.Plan{UserID: user.ID, MenuID: menu.ID, Content: "計画"})
+	db.Create(&models.Progress{UserID: user.ID, MenuID: menu.ID, TargetDays: 10})
+
+	h := &OverviewHandler{DB: db}
+	router := gin.New()
+	router.GET("/api/overview", h.GetOverview)
+
+	w := httptest.NewRecorder()
+	req := httptest.NewRequest(http.MethodGet, "/api/overview", nil)
+	req.Header.Set("X-User-Id", fmt.Sprintf("%d", user.ID))
+	router.ServeHTTP(w, req)
+
+	if w.Code != http.StatusOK {
+		t.Fatalf("expected 200, got %d: %s", w.Code, w.Body.String())
+	}
+	var items []struct {
+		TargetDays int `json:"target_days"`
+	}
+	json.Unmarshal(w.Body.Bytes(), &items)
+	if len(items) != 1 {
+		t.Fatalf("expected 1 item, got %d", len(items))
+	}
+	if items[0].TargetDays != 10 {
+		t.Errorf("expected target_days to use Progress value 10, got %d", items[0].TargetDays)
+	}
+}
+
 func TestUpdateOverview_UpsertsProgress(t *testing.T) {
 	db := setupTestDB(t)
 	user := createTestUser(t, db, "🐨")

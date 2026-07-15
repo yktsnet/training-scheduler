@@ -63,6 +63,26 @@ func TestGetPlans_NoAuth_ReturnsEmpty(t *testing.T) {
 	}
 }
 
+func TestUpdatePlan_NonexistentID_Returns404(t *testing.T) {
+	db := setupTestDB(t)
+	user := createTestUser(t, db, "🐿")
+
+	h := &PlansHandler{DB: db}
+	router := gin.New()
+	router.POST("/api/plans/:id", h.UpdatePlan)
+
+	body := `{"content": "更新"}`
+	w := httptest.NewRecorder()
+	req := httptest.NewRequest(http.MethodPost, "/api/plans/9999", bytes.NewBufferString(body))
+	req.Header.Set("Content-Type", "application/json")
+	req.Header.Set("X-User-Id", fmt.Sprintf("%d", user.ID))
+	router.ServeHTTP(w, req)
+
+	if w.Code != http.StatusNotFound {
+		t.Errorf("expected 404 for nonexistent plan id, got %d: %s", w.Code, w.Body.String())
+	}
+}
+
 func TestUpdatePlan_OnlyOwnerCanUpdate(t *testing.T) {
 	db := setupTestDB(t)
 	owner := createTestUser(t, db, "🐼")
