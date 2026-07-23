@@ -54,7 +54,7 @@ jobs:
         # glebarez/sqlite は Pure Go のため CGO_ENABLED=0 で問題なし
         run: CGO_ENABLED=0 go build -ldflags="-s -w" -o training-app .
 
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
           name: training-app-${{ github.sha }}
           path: backend/training-app
