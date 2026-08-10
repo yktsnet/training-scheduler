@@ -7,6 +7,25 @@
 
 A training support tool designed to foster the autonomy of new employees. By blending "automated system management" with "analog handwriting-like operations," this application is not a rigid progress tracker but a tool for mentors to quietly watch over new hires based on their **subjective sense of progress**.
 
+## Screenshots
+
+`docker compose up --build` reproduces the same screens locally, showing the bundled dummy data.
+
+| Login | Curriculum selection |
+|---|---|
+| ![Login screen](src/animals.png) | ![Curriculum selection screen](src/menu.png) |
+| Pick an animal emoji and that is the whole login. No password, no sign-up — a mentor sitting next to you can start it for you | Training menus listed with overview, estimated days, prerequisites, and skills gained. The order you pick them in becomes the roadmap |
+
+| Training plan | Daily log |
+|---|---|
+| ![Training plan screen](src/plan.png) | ![Daily log screen](src/daily.png) |
+| One row per day for each menu item. Click a card to write, click outside to save. What happens on which day is filled in by the trainee | The days since the start date, kept one card per date. Facts and reflection go on the same card for the mentor to read later |
+
+| Dashboard |
+|---|
+| ![Dashboard screen](src/overview.png) |
+| Progress on two axes: elapsed days and the trainee's own sense of it. Nobody else rules on whether they are behind — the mentor just watches the slider they placed between "struggling" and "flying" and the note beside it |
+
 ---
 
 ## Quick Start
@@ -67,14 +86,10 @@ The app includes a "Demo Mode" for demonstration purposes (enabled by default).
 
 ### User (Animal Login)
 
-<img src="src/animals.png" width="500" alt="menu-pic">
-
 - **Role**: Identification of individuals (new hires, mentors) using the app.
 - **Fields**: `emoji` (unique emoji like 🦁 or 🐰), initials (1–3 uppercase English letters).
 
 ### Menu (Curriculum)
-
-<img src="src/menu.png" width="500" alt="menu-pic">
 
 - **Role**: Master data for the training curriculum (common to all users).
 - **Fields**: Name, estimated days, overview, reference URL.
@@ -82,21 +97,15 @@ The app includes a "Demo Mode" for demonstration purposes (enabled by default).
 
 ### Plan (Training Plan)
 
-<img src="src/plan.png" width="500" alt="plan-pic">
-
 - **Role**: Specific learning plans for each menu item.
 - **Fields**: `content` (free-form text), `user_id`.
 
 ### Report (Daily Log)
 
-<img src="src/daily.png" width="500" alt="daily-pic">
-
 - **Role**: Daily records of facts and reflections.
 - **Fields**: `date` (YYYY-MM-DD), `content` (report content), `user_id`.
 
 ### Progress (Status & Condition)
-
-<img src="src/overview.png" width="500" alt="overview-pic">
 
 - **Role**: Meta information for dashboard display.
 - **Fields**: Start date, target days, `offset_days` (subjective drift value 1–5), status notes.

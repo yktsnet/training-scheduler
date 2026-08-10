@@ -7,6 +7,25 @@
 
 新入社員の自律性を促すことを目的とした研修支援ツールです。「システムによる自動管理」と「手書き感覚のアナログ操作」を融合させ、ガチガチの進捗管理ではなく、新人の「主観的な手応え」をベースにメンターが静かに見守るためのアプリケーションです。
 
+## Screenshots
+
+`docker compose up --build` で同じ画面をローカルに再現できる（同梱のダミーデータを表示している）。
+
+| ログイン | カリキュラム選択 |
+|---|---|
+| ![ログイン画面](src/animals.png) | ![カリキュラム選択画面](src/menu.png) |
+| 絵文字のアニマルを選ぶだけで本人を識別する。パスワードもアカウント登録もなく、席で隣に座ったまま始められる | 研修メニューを一覧し、概要・想定日数・前提知識・習得スキルを見てから選ぶ。選んだ順序がそのままロードマップになる |
+
+| 研修計画 | 日報 |
+|---|---|
+| ![研修計画画面](src/plan.png) | ![日報画面](src/daily.png) |
+| メニューごとに日数分の行が並び、カードをクリックして書き、外をクリックして保存する。何日目に何をやるかは本人が埋める | 開始日からの歩みを日付単位で残す。事実と内省を1枚のカードに書き、後からメンターが読む |
+
+| ダッシュボード |
+|---|
+| ![ダッシュボード画面](src/overview.png) |
+| 進捗を日数と「手応え」の2軸で並べる。遅れているかどうかを他人が判定するのではなく、本人が苦戦〜爆速の間で置いたスライダーとメモをメンターが眺める |
+
 ---
 
 ## Quick Start
@@ -67,14 +86,10 @@ DEMO_MODE=true ADMIN_PASSWORD=admin123 ./backend/training-app
 
 ### User (Animal Login)
 
-<img src="src/animals.png" width="500" alt="menu-pic">
-
 - **役割**: アプリを利用する個人（新人・メンター）の識別。
 - **項目**: `emoji` (🦁や🐰などのユニークな絵文字)、イニシャル（英大文字1〜3文字）。
 
 ### Menu (Curriculum)
-
-<img src="src/menu.png" width="500" alt="menu-pic">
 
 - **役割**: 研修カリキュラムのマスターデータ（全ユーザー共通）。
 - **項目**: 名称、目安日数、概要、参考URL。
@@ -82,21 +97,15 @@ DEMO_MODE=true ADMIN_PASSWORD=admin123 ./backend/training-app
 
 ### Plan (Training Plan)
 
-<img src="src/plan.png" width="500" alt="plan-pic">
-
 - **役割**: 各メニューに対する具体的な学習計画。
 - **項目**: `content` (自由記述のテキスト)、`user_id`。
 
 ### Report (Daily Log)
 
-<img src="src/daily.png" width="500" alt="daily-pic">
-
 - **役割**: 日付単位の事実と内省の記録。
 - **項目**: `date` (YYYY-MM-DD)、`content` (日報内容)、`user_id`。
 
 ### Progress (Status & Condition)
-
-<img src="src/overview.png" width="500" alt="overview-pic">
 
 - **役割**: ダッシュボード表示用のメタ情報。
 - **項目**: 開始日、目標日数、`offset_days` (主観ズレ値 1〜5)、ステータスメモ。
