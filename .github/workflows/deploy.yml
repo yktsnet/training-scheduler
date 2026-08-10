@@ -30,7 +30,7 @@ jobs:
       - name: Copy dist to backend
         run: cp -r frontend/dist backend/dist
 
-      - uses: actions/setup-go@v6
+      - uses: actions/setup-go@v7
         with:
           go-version-file: backend/go.mod
           cache-dependency-path: backend/go.sum
