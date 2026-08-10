@@ -3,7 +3,6 @@
 # Training Scheduler
 
 [![CI](https://github.com/yktsnet/training-scheduler/actions/workflows/ci.yml/badge.svg)](https://github.com/yktsnet/training-scheduler/actions/workflows/ci.yml)
-[![Deploy](https://github.com/yktsnet/training-scheduler/actions/workflows/deploy.yml/badge.svg)](https://github.com/yktsnet/training-scheduler/actions/workflows/deploy.yml)
 
 新入社員の自律性を促すことを目的とした研修支援ツールです。「システムによる自動管理」と「手書き感覚のアナログ操作」を融合させ、ガチガチの進捗管理ではなく、新人の「主観的な手応え」をベースにメンターが静かに見守るためのアプリケーションです。
 
@@ -16,14 +15,10 @@
 | ![ログイン画面](src/animals.png) | ![カリキュラム選択画面](src/menu.png) |
 | 絵文字のアニマルを選ぶだけで本人を識別する。パスワードもアカウント登録もなく、席で隣に座ったまま始められる | 研修メニューを一覧し、概要・想定日数・前提知識・習得スキルを見てから選ぶ。選んだ順序がそのままロードマップになる |
 
-| 研修計画 | 日報 |
+| 研修計画 | ダッシュボード |
 |---|---|
-| ![研修計画画面](src/plan.png) | ![日報画面](src/daily.png) |
-| メニューごとに日数分の行が並び、カードをクリックして書き、外をクリックして保存する。何日目に何をやるかは本人が埋める | 開始日からの歩みを日付単位で残す。事実と内省を1枚のカードに書き、後からメンターが読む |
-
-| ダッシュボード | |
-|---|---|
-| ![ダッシュボード画面](src/overview.png) | 進捗を日数と「手応え」の2軸で並べる。遅れているかどうかを他人が判定するのではなく、本人が苦戦〜爆速の間で置いたスライダーとメモをメンターが眺める |
+| ![研修計画画面](src/plan.png) | ![ダッシュボード画面](src/overview.png) |
+| メニューごとに日数分の行が並ぶ。カードをクリックして書き、外をクリックして保存する。何日目に何をやるかは本人が埋める。日報も同じ操作で1日1枚ずつ残す | 進捗を日数と「手応え」の2軸で並べる。遅れているかどうかを他人が判定するのではなく、本人が苦戦〜爆速の間で置いたスライダーとメモをメンターが眺める |
 
 ---
 
@@ -180,7 +175,16 @@ graph TD
 
 ## Deploy
 
-`main` ブランチへのプッシュにより、GitHub Actionsでテストおよび自動ビルドが行われ、デプロイ先サーバーへ自動デプロイされます。フロントエンドの静的ファイルがGoバイナリに埋め込まれているため、生成された単一の実行ファイルをサーバーに配置して起動するだけでデプロイが完了します。
+自前のサーバーへ配信する場合は `.github/workflows/deploy.yml` を使う。Linux amd64 の単一バイナリをビルドし、Tailscale 経由で SSH して差し替え、systemd サービスを再起動する。フロントエンドは Go バイナリに埋め込まれているため、置くファイルはこの1つだけでよい。
+
+Actions タブから手動で実行する。必要な secrets は次のとおり。
+
+| Secret | 用途 |
+|---|---|
+| `TS_OAUTH_CLIENT_ID` / `TS_OAUTH_SECRET` | 配信先が属する tailnet への接続（`tag:ci`） |
+| `DEPLOY_HOST` / `DEPLOY_USER` / `SSH_PRIVATE_KEY` | 配信先ホストへの SSH |
+
+配置先・サービス名は workflow 冒頭の `env` で変える。配信先には `sudo systemctl restart` を許可した systemd ユニットを用意しておく。
 
 ---
 

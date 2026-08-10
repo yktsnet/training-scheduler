@@ -3,7 +3,6 @@
 # Training Scheduler
 
 [![CI](https://github.com/yktsnet/training-scheduler/actions/workflows/ci.yml/badge.svg)](https://github.com/yktsnet/training-scheduler/actions/workflows/ci.yml)
-[![Deploy](https://github.com/yktsnet/training-scheduler/actions/workflows/deploy.yml/badge.svg)](https://github.com/yktsnet/training-scheduler/actions/workflows/deploy.yml)
 
 A training support tool designed to foster the autonomy of new employees. By blending "automated system management" with "analog handwriting-like operations," this application is not a rigid progress tracker but a tool for mentors to quietly watch over new hires based on their **subjective sense of progress**.
 
@@ -16,14 +15,10 @@ A training support tool designed to foster the autonomy of new employees. By ble
 | ![Login screen](src/animals.png) | ![Curriculum selection screen](src/menu.png) |
 | Pick an animal emoji and that is the whole login. No password, no sign-up — a mentor sitting next to you can start it for you | Training menus listed with overview, estimated days, prerequisites, and skills gained. The order you pick them in becomes the roadmap |
 
-| Training plan | Daily log |
+| Training plan | Dashboard |
 |---|---|
-| ![Training plan screen](src/plan.png) | ![Daily log screen](src/daily.png) |
-| One row per day for each menu item. Click a card to write, click outside to save. What happens on which day is filled in by the trainee | The days since the start date, kept one card per date. Facts and reflection go on the same card for the mentor to read later |
-
-| Dashboard | |
-|---|---|
-| ![Dashboard screen](src/overview.png) | Progress on two axes: elapsed days and the trainee's own sense of it. Nobody else rules on whether they are behind — the mentor just watches the slider they placed between "struggling" and "flying" and the note beside it |
+| ![Training plan screen](src/plan.png) | ![Dashboard screen](src/overview.png) |
+| One row per day for each menu item. Click a card to write, click outside to save. What happens on which day is filled in by the trainee; the daily log works the same way, one card per date | Progress on two axes: elapsed days and the trainee's own sense of it. Nobody else rules on whether they are behind — the mentor just watches the slider they placed between "struggling" and "flying" and the note beside it |
 
 ---
 
@@ -180,7 +175,16 @@ graph TD
 
 ## Deploy
 
-Pushing to the `main` branch triggers tests and automatic build via GitHub Actions, then automatic deployment to the deployment server. Since frontend static files are embedded in the Go binary, deployment is complete simply by placing the generated single executable on the server and starting it.
+To deploy to your own server, use `.github/workflows/deploy.yml`. It builds a single Linux amd64 binary, SSHes over Tailscale to swap it in, and restarts the systemd service. The frontend is embedded in the Go binary, so that one file is all there is to place.
+
+Run it manually from the Actions tab. The required secrets are:
+
+| Secret | Purpose |
+|---|---|
+| `TS_OAUTH_CLIENT_ID` / `TS_OAUTH_SECRET` | Joining the tailnet the target host is on (`tag:ci`) |
+| `DEPLOY_HOST` / `DEPLOY_USER` / `SSH_PRIVATE_KEY` | SSH into the target host |
+
+Destination path and service name are set in the `env` block at the top of the workflow. The target host needs a systemd unit that the deploy user may `sudo systemctl restart`.
 
 ---
 
