@@ -11,9 +11,9 @@ jobs:
     name: Go Tests
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
-      - uses: actions/setup-go@v5
+      - uses: actions/setup-go@v6
         with:
           go-version-file: backend/go.mod
           cache-dependency-path: backend/go.sum
@@ -27,9 +27,9 @@ jobs:
     needs: test
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v6
         with:
           node-version: '20'
           cache: 'npm'
@@ -44,7 +44,7 @@ jobs:
       - name: Copy dist to backend
         run: cp -r frontend/dist backend/dist
 
-      - uses: actions/setup-go@v5
+      - uses: actions/setup-go@v6
         with:
           go-version-file: backend/go.mod
           cache-dependency-path: backend/go.sum
@@ -54,7 +54,7 @@ jobs:
         # glebarez/sqlite は Pure Go のため CGO_ENABLED=0 で問題なし
         run: CGO_ENABLED=0 go build -ldflags="-s -w" -o training-app .
 
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
           name: training-app-${{ github.sha }}
           path: backend/training-app
