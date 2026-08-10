@@ -21,10 +21,9 @@ A training support tool designed to foster the autonomy of new employees. By ble
 | ![Training plan screen](src/plan.png) | ![Daily log screen](src/daily.png) |
 | One row per day for each menu item. Click a card to write, click outside to save. What happens on which day is filled in by the trainee | The days since the start date, kept one card per date. Facts and reflection go on the same card for the mentor to read later |
 
-| Dashboard |
-|---|
-| ![Dashboard screen](src/overview.png) |
-| Progress on two axes: elapsed days and the trainee's own sense of it. Nobody else rules on whether they are behind — the mentor just watches the slider they placed between "struggling" and "flying" and the note beside it |
+| Dashboard | |
+|---|---|
+| ![Dashboard screen](src/overview.png) | Progress on two axes: elapsed days and the trainee's own sense of it. Nobody else rules on whether they are behind — the mentor just watches the slider they placed between "struggling" and "flying" and the note beside it |
 
 ---
 
