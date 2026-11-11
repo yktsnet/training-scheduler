@@ -171,6 +171,8 @@ graph TD
 - General user authentication with passwords (animal login only)
 - Direct editing of general user data by mentors or admins (read-only)
 
+The API behaviors this project guarantees, and the tests that enforce them, are listed in the [Guarantee Ledger](docs/guarantees/README.md) (Japanese).
+
 ---
 
 ## Deploy

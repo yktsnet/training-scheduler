@@ -124,3 +124,22 @@ func TestUpdateOverview_NoAuth_Returns401(t *testing.T) {
 		t.Errorf("expected 401, got %d", w.Code)
 	}
 }
+
+func TestGetOverview_NoAuth_ReturnsEmpty(t *testing.T) {
+	db := setupTestDB(t)
+	h := &OverviewHandler{DB: db}
+	router := gin.New()
+	router.GET("/api/overview", h.GetOverview)
+
+	w := httptest.NewRecorder()
+	req := httptest.NewRequest(http.MethodGet, "/api/overview", nil)
+	router.ServeHTTP(w, req)
+
+	if w.Code != http.StatusOK {
+		t.Errorf("expected 200, got %d", w.Code)
+	}
+	var result []interface{}
+	if err := json.Unmarshal(w.Body.Bytes(), &result); err != nil || len(result) != 0 {
+		t.Errorf("expected empty array without auth, got %s", w.Body.String())
+	}
+}

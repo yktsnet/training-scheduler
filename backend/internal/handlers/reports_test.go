@@ -134,3 +134,26 @@ func TestGetReports_OrderedByDateDesc(t *testing.T) {
 		t.Errorf("expected first date 2025-06-03, got %s", reports[0].Date)
 	}
 }
+
+func TestGetReports_ExcludesOtherUsers(t *testing.T) {
+	db := setupTestDB(t)
+	me := createTestUser(t, db, "🐳")
+	other := createTestUser(t, db, "🐙")
+	db.Create(&models.Report{UserID: me.ID, Date: "2025-06-01", Content: "mine"})
+	db.Create(&models.Report{UserID: other.ID, Date: "2025-06-01", Content: "theirs"})
+
+	h := &ReportsHandler{DB: db}
+	router := gin.New()
+	router.GET("/api/reports", h.GetReports)
+
+	w := httptest.NewRecorder()
+	req := httptest.NewRequest(http.MethodGet, "/api/reports", nil)
+	req.Header.Set("X-User-Id", fmt.Sprintf("%d", me.ID))
+	router.ServeHTTP(w, req)
+
+	var reports []models.Report
+	json.Unmarshal(w.Body.Bytes(), &reports)
+	if len(reports) != 1 || reports[0].Content != "mine" {
+		t.Errorf("expected only own report, got %+v", reports)
+	}
+}
