@@ -112,3 +112,56 @@ func TestUpdatePlan_OnlyOwnerCanUpdate(t *testing.T) {
 		t.Errorf("non-owner must not modify content, got %q", fresh.Content)
 	}
 }
+
+func TestUpdatePlan_OwnerUpdatesContent(t *testing.T) {
+	db := setupTestDB(t)
+	owner := createTestUser(t, db, "🐧")
+	menu := createTestMenu(t, db, "API設計", 2)
+	plan := models.Plan{UserID: owner.ID, MenuID: menu.ID, Content: "初期"}
+	db.Create(&plan)
+
+	h := &PlansHandler{DB: db}
+	router := gin.New()
+	router.POST("/api/plans/:id", h.UpdatePlan)
+
+	w := httptest.NewRecorder()
+	req := httptest.NewRequest(http.MethodPost, fmt.Sprintf("/api/plans/%d", plan.ID), bytes.NewBufferString(`{"content": "更新後"}`))
+	req.Header.Set("Content-Type", "application/json")
+	req.Header.Set("X-User-Id", fmt.Sprintf("%d", owner.ID))
+	router.ServeHTTP(w, req)
+
+	if w.Code != http.StatusOK {
+		t.Errorf("expected 200, got %d: %s", w.Code, w.Body.String())
+	}
+	var fresh models.Plan
+	db.First(&fresh, plan.ID)
+	if fresh.Content != "更新後" {
+		t.Errorf("expected content replaced, got %q", fresh.Content)
+	}
+}
+
+func TestGetPlans_ExcludesOtherUsers(t *testing.T) {
+	db := setupTestDB(t)
+	me := createTestUser(t, db, "🐳")
+	other := createTestUser(t, db, "🐙")
+	menu := createTestMenu(t, db, "Linux", 2)
+	db.Create(&models.Plan{UserID: me.ID, MenuID: menu.ID, Content: "mine"})
+	db.Create(&models.Plan{UserID: other.ID, MenuID: menu.ID, Content: "theirs"})
+
+	h := &PlansHandler{DB: db}
+	router := gin.New()
+	router.GET("/api/plans", h.GetPlans)
+
+	w := httptest.NewRecorder()
+	req := httptest.NewRequest(http.MethodGet, "/api/plans", nil)
+	req.Header.Set("X-User-Id", fmt.Sprintf("%d", me.ID))
+	router.ServeHTTP(w, req)
+
+	var result []struct {
+		Content string `json:"content"`
+	}
+	json.Unmarshal(w.Body.Bytes(), &result)
+	if len(result) != 1 || result[0].Content != "mine" {
+		t.Errorf("expected only own plan, got %+v", result)
+	}
+}

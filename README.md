@@ -171,6 +171,8 @@ graph TD
 - パスワードを用いた一般ユーザー認証（アニマルログインのみ）
 - メンターや管理者による一般ユーザーデータの直接編集（読み取りのみ可）
 
+API が約束する振る舞いとそれを守るテストは [Guarantee Ledger](docs/guarantees/README.md) にまとめている。
+
 ---
 
 ## Deploy

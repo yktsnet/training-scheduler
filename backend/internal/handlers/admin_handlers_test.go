@@ -283,3 +283,103 @@ func TestAdminDeleteMenu_Success(t *testing.T) {
 		t.Error("associated progresses were not deleted")
 	}
 }
+func TestAdminAuthMiddleware_WrongToken(t *testing.T) {
+	router := gin.New()
+	router.Use(AdminAuthMiddleware())
+	router.GET("/api/admin/test", func(c *gin.Context) {
+		c.JSON(http.StatusOK, gin.H{"status": "ok"})
+	})
+
+	w := httptest.NewRecorder()
+	req := httptest.NewRequest(http.MethodGet, "/api/admin/test", nil)
+	req.Header.Set("X-Admin-Token", "not-a-valid-token")
+	router.ServeHTTP(w, req)
+	if w.Code != http.StatusUnauthorized {
+		t.Errorf("expected 401, got %d", w.Code)
+	}
+}
+
+func TestAdminGetMenus_ReturnsAll(t *testing.T) {
+	db := setupTestDB(t)
+	createTestMenu(t, db, "Go基礎", 5)
+	createTestMenu(t, db, "Git入門", 3)
+
+	h := &AdminHandler{DB: db}
+	router := gin.New()
+	router.GET("/api/admin/menus", h.GetMenus)
+
+	w := httptest.NewRecorder()
+	req := httptest.NewRequest(http.MethodGet, "/api/admin/menus", nil)
+	router.ServeHTTP(w, req)
+
+	if w.Code != http.StatusOK {
+		t.Errorf("expected 200, got %d", w.Code)
+	}
+	var menus []models.Menu
+	json.Unmarshal(w.Body.Bytes(), &menus)
+	if len(menus) != 2 {
+		t.Errorf("expected 2 menus, got %d", len(menus))
+	}
+}
+
+func TestAdminUpdateMenu_NonexistentID_Returns404(t *testing.T) {
+	defer cleanupTestJSON(t)
+	db := setupTestDB(t)
+	h := &AdminHandler{DB: db}
+	router := gin.New()
+	router.PUT("/api/admin/menus/:id", h.UpdateMenu)
+
+	body := `{"name": "幽霊", "days": 2, "description": "d", "url": "https://example.com"}`
+	w := httptest.NewRecorder()
+	req := httptest.NewRequest(http.MethodPut, "/api/admin/menus/9999", bytes.NewBufferString(body))
+	req.Header.Set("Content-Type", "application/json")
+	router.ServeHTTP(w, req)
+	if w.Code != http.StatusNotFound {
+		t.Errorf("expected 404, got %d: %s", w.Code, w.Body.String())
+	}
+}
+
+func TestAdminDeleteMenu_NonexistentID_Returns404(t *testing.T) {
+	defer cleanupTestJSON(t)
+	db := setupTestDB(t)
+	h := &AdminHandler{DB: db}
+	router := gin.New()
+	router.DELETE("/api/admin/menus/:id", h.DeleteMenu)
+
+	w := httptest.NewRecorder()
+	req := httptest.NewRequest(http.MethodDelete, "/api/admin/menus/9999", nil)
+	router.ServeHTTP(w, req)
+	if w.Code != http.StatusNotFound {
+		t.Errorf("expected 404, got %d: %s", w.Code, w.Body.String())
+	}
+}
+
+// テストの cwd（handlers/）からは書き出し先が internal/database/menu_config.json に解決される
+func TestAdminCreateMenu_WritesMenuConfigJSON(t *testing.T) {
+	defer cleanupTestJSON(t)
+	db := setupTestDB(t)
+	h := &AdminHandler{DB: db}
+	router := gin.New()
+	router.POST("/api/admin/menus", h.CreateMenu)
+
+	body := `{"name": "書き戻し確認", "days": 2, "description": "d", "url": "https://example.com"}`
+	w := httptest.NewRecorder()
+	req := httptest.NewRequest(http.MethodPost, "/api/admin/menus", bytes.NewBufferString(body))
+	req.Header.Set("Content-Type", "application/json")
+	router.ServeHTTP(w, req)
+	if w.Code != http.StatusOK {
+		t.Fatalf("expected 200, got %d: %s", w.Code, w.Body.String())
+	}
+
+	data, err := os.ReadFile("internal/database/menu_config.json")
+	if err != nil {
+		t.Fatalf("menu_config.json not written: %v", err)
+	}
+	var menus []models.Menu
+	if err := json.Unmarshal(data, &menus); err != nil {
+		t.Fatalf("invalid JSON: %v", err)
+	}
+	if len(menus) != 1 || menus[0].Name != "書き戻し確認" {
+		t.Errorf("unexpected menu_config.json content: %+v", menus)
+	}
+}
